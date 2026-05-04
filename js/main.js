@@ -310,7 +310,7 @@ function recalculateStats() {
     let oldMaxHp = player.maxHp;
 
     player.maxHp = 180 + (runUpgrades.hp * 15);
-    player.speed = 2.5 * (1 + runUpgrades.speed * 0.015);
+    player.speed = 2.7 * (1 + runUpgrades.speed * 0.015);
 
     player.stats = {
         atk: 1.0 + (runUpgrades.atk * 0.02) + (level * 0.05),
@@ -669,7 +669,7 @@ function update(dt) {
     player.hp = Math.min(player.maxHp, player.hp + (0.525 + player.stats.regen) * dt);
     player.lookX = joystick.lastX; player.lookY = joystick.lastY; player.isMoving = (Math.abs(joystick.x) > 0.05 || Math.abs(joystick.y) > 0.05);
 
-    if(player.hitTimer > 0) player.hitTimer -= dt; if(shake > 0) shake -= dt * 15;
+    if(player.hitTimer > 0) player.hitTimer -= dt; if(shake > 0) shake -= dt * 3;
     if (isTimeStopped) { timeStopTimer -= dt; if (timeStopTimer <= 0) isTimeStopped = false; }
     
     if (bossRewardTimer > 0) {
