@@ -21,74 +21,84 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
+    // 1. 애니메이션 변수 (가만히 있으면 walkCycle은 0)
     let walkCycle = isMoving ? time * 15 : 0;
-    let bounceY = isMoving ? Math.abs(Math.sin(walkCycle)) * -4 : 0; 
-    let breathY = !isMoving ? Math.sin(time * 3) * 1.2 : 0; 
+    let bounceY = isMoving ? Math.abs(Math.sin(walkCycle)) * -4 : 0;
+    let breathY = !isMoving ? Math.sin(time * 3) * 1.5 : 0;
     let legSwing = Math.sin(walkCycle) * 15;
     let armSwing = Math.sin(walkCycle) * 20;
 
     cCtx.translate(0, bounceY + breathY);
 
-    let bodyTilt = lookX * 5;     
-    let eyeShiftX = lookX * 10;   
-    let eyeShiftY = lookY * 4;    
-    let depthOffset = lookX * 5;  
+    // 2. 방향 가중치 (lookX/Y가 0이면 정면 상태가 됨)
+    let bodyX = lookX * 5;    // 몸통 하단 이동
+    let headX = lookX * 12;   // 머리 상단 이동 (머리가 더 많이 움직여야 입체적임)
+    let eyeX = headX + lookX * 4; // 눈은 머리 위에서 한 번 더 이동
+    let eyeY = -42 + (lookY * 5);
 
     cCtx.lineWidth = 4;
     cCtx.strokeStyle = '#000';
+    cCtx.fillStyle = '#fff';
 
     const drawLimb = (x, y, w, h, angle) => {
         cCtx.save();
         cCtx.translate(x, y);
         cCtx.rotate(angle * Math.PI / 180);
         cCtx.beginPath();
-        cCtx.roundRect(-w/2, 0, w, h, w/2);
-        cCtx.fillStyle = '#fff';
+        cCtx.roundRect(-w / 2, 0, w, h, w / 2);
         cCtx.fill(); cCtx.stroke();
         cCtx.restore();
     };
 
-    const limbs = [
-        { id: 'left',  side: -1, x: -14, yLeg: -6, yArm: -24 },
-        { id: 'right', side: 1,  x: 14,  yLeg: -6, yArm: -24 }
-    ];
+    // 3. 레이어 순서 결정 (정면/좌/우)
+    let side = 0; 
+    if (lookX > 0.1) side = 1;      // 우측
+    else if (lookX < -0.1) side = -1; // 좌측
 
-    if (lookX > 0) limbs.sort((a, b) => a.side - b.side);
-    else if (lookX < 0) limbs.sort((a, b) => b.side - a.side);
-    else limbs.sort((a, b) => a.side - b.side); 
+    // [Step 1] 뒤쪽 부위 (몸통에 가려지는 팔다리)
+    if (side === 1) { // 우측을 볼 때: 왼쪽 부위가 뒤로
+        drawLimb(-14 + bodyX, -8, 12, 16, legSwing);
+        drawLimb(-22 + bodyX, -28, 10, 20, armSwing);
+    } else if (side === -1) { // 좌측을 볼 때: 오른쪽 부위가 뒤로
+        drawLimb(14 + bodyX, -8, 12, 16, -legSwing);
+        drawLimb(22 + bodyX, -28, 10, 20, -armSwing);
+    } else { // 완벽한 정면
+        drawLimb(-15, -8, 12, 16, legSwing);
+        drawLimb(15, -8, 12, 16, -legSwing);
+    }
 
-    let far = limbs[0];
-    let farSwing = far.side === -1 ? legSwing : -legSwing;
-    drawLimb(far.x + depthOffset, far.yLeg, 12, 16, farSwing);
-    drawLimb(far.x * 1.1 + depthOffset, far.yArm, 10, 20, far.side === -1 ? armSwing : -armSwing);
-
-    cCtx.fillStyle = '#fff';
-    
-    // 몸통 하단
-    cCtx.beginPath(); cCtx.arc(0 + bodyTilt, -18, 22, 0, Math.PI * 2);
+    // [Step 2] 눈사람 몸체 (하단 -> 상단)
+    // 하단 몸통
+    cCtx.beginPath();
+    cCtx.arc(bodyX, -20, 23, 0, Math.PI * 2);
     cCtx.fill(); cCtx.stroke();
 
-    // 몸통 상단(머리)
-    cCtx.beginPath(); cCtx.arc(bodyTilt * 1.3, -42, 17, 0, Math.PI * 2);
+    // 상단 머리
+    cCtx.beginPath();
+    cCtx.arc(headX, -45, 18, 0, Math.PI * 2);
     cCtx.fill(); cCtx.stroke();
 
-    // 상하체 연결부 자연스럽게 채우기
-    cCtx.beginPath(); cCtx.arc(0 + bodyTilt * 1.1, -30, 14, 0, Math.PI * 2);
+    // [Step 3] 시선 (눈동자)
+    cCtx.fillStyle = '#000';
+    cCtx.beginPath();
+    cCtx.ellipse(eyeX - 8, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
+    cCtx.fill();
+    cCtx.beginPath();
+    cCtx.ellipse(eyeX + 8, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
     cCtx.fill();
 
-    // 눈동자
-    cCtx.fillStyle = '#000';
-    let eyeY = -44 + eyeShiftY;
-    let eyeCenterX = bodyTilt * 1.3 + eyeShiftX;
-
-    cCtx.beginPath(); cCtx.ellipse(eyeCenterX - 7, eyeY, 3.5, 7, 0, 0, Math.PI * 2); cCtx.fill();
-    cCtx.beginPath(); cCtx.ellipse(eyeCenterX + 7, eyeY, 3.5, 7, 0, 0, Math.PI * 2); cCtx.fill();
-
-    // 가까운 쪽 팔다리를 가장 마지막에 그려서 몸통 위로 덮기
-    let near = limbs[1];
-    let nearSwing = near.side === -1 ? legSwing : -legSwing;
-    drawLimb(near.x + depthOffset, near.yLeg, 12, 16, nearSwing);
-    drawLimb(near.x * 1.1 + depthOffset, near.yArm, 10, 20, near.side === -1 ? armSwing : -armSwing);
+    // [Step 4] 앞쪽 부위 (몸통 위를 덮는 팔다리)
+    cCtx.fillStyle = '#fff';
+    if (side === 1) { // 우측을 볼 때: 오른쪽 부위가 앞으로
+        drawLimb(14 + bodyX, -8, 12, 16, -legSwing);
+        drawLimb(22 + bodyX, -28, 10, 20, -armSwing);
+    } else if (side === -1) { // 좌측을 볼 때: 왼쪽 부위가 앞으로
+        drawLimb(-14 + bodyX, -8, 12, 16, legSwing);
+        drawLimb(-22 + bodyX, -28, 10, 20, armSwing);
+    } else { // 정면 팔
+        drawLimb(-24, -28, 10, 20, armSwing);
+        drawLimb(24, -28, 10, 20, -armSwing);
+    }
 
     cCtx.restore();
 }
