@@ -11,43 +11,41 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     cCtx.save();
     cCtx.translate(px, py);
 
-    // 1. 방향 전환 (조이스틱 좌/우 방향에 따라 캐릭터 전체를 반전시킵니다)
+    // 1. 좌우 반전
     let isLeft = lookX < 0;
     cCtx.scale(isLeft ? -1 : 1, 1);
 
-    // 2. 피격 시 깜빡임 효과
+    // 2. 피격 효과
     if (hitTimer > 0 && Math.floor(time * 30) % 2 === 0) {
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
-    // 3. 애니메이션 변수 (걷기, 숨쉬기)
+    // 3. 애니메이션 변수
     let walkPhase = isMoving ? time * 15 : 0;
-    let legSwing = Math.sin(walkPhase) * 30; // 다리 앞뒤 회전
-    let armSwing = Math.sin(walkPhase) * 40; // 팔 앞뒤 회전
-    let bounceY = isMoving ? Math.abs(Math.sin(walkPhase)) * -3 : 0; // 통통 튀기
-    let breathY = !isMoving ? Math.sin(time * 4) * 1.5 : 0; // 가만히 있을 때 숨쉬기
-    let headTilt = isMoving ? Math.sin(walkPhase) * 4 : Math.sin(time * 2) * 2; // 머리 까딱임
+    let legSwing = Math.sin(walkPhase) * 30; 
+    let armSwing = Math.sin(walkPhase) * 40; 
+    let bounceY = isMoving ? Math.abs(Math.sin(walkPhase)) * -3 : 0; 
+    let breathY = !isMoving ? Math.sin(time * 4) * 1.5 : 0;
+    let headTilt = isMoving ? Math.sin(walkPhase) * 4 : Math.sin(time * 2) * 2;
 
-    // 이미지가 정상 로드되었을 때만 그리기
     if (playerSprite.complete && playerSprite.width > 0) {
         let W = playerSprite.width;
         let H = playerSprite.height;
 
-        // 💡 핵심 수정: 핑크색 가이드라인(2x2 그리드)에 맞춘 정확한 영역 분할
+        // 핑크색 가이드라인(2x2) 기반 정밀 슬라이스
         const slices = {
-            head:  { sx: 0,        sy: 0,       sw: W*0.35, sh: H*0.5 }, // 머리 원형
-            face:  { sx: W*0.35,   sy: 0,       sw: W*0.15, sh: H*0.5 }, // 얼굴 표정
+            head:  { sx: 0,        sy: 0,       sw: W*0.34, sh: H*0.5 }, // 머리
+            face:  { sx: W*0.34,   sy: 0,       sw: W*0.16, sh: H*0.5 }, // 얼굴
             armL:  { sx: W*0.5,    sy: 0,       sw: W*0.25, sh: H*0.5 }, // 왼팔
             armR:  { sx: W*0.75,   sy: 0,       sw: W*0.25, sh: H*0.5 }, // 오른팔
             legL:  { sx: 0,        sy: H*0.5,   sw: W*0.25, sh: H*0.5 }, // 왼다리
             legR:  { sx: W*0.25,   sy: H*0.5,   sw: W*0.25, sh: H*0.5 }, // 오른다리
-            torso: { sx: W*0.5,    sy: H*0.5,   sw: W*0.5,  sh: H*0.5 }  // 몸통
+            torso: { sx: W*0.5,    sy: H*0.5,   sw: W*0.5,  sh: H*0.5 }  // 몸통(셔츠)
         };
 
-        // 캐릭터 렌더링 크기 배율
-        let sRatio = 55 / (H * 0.5); 
+        // 크기 배율 조절 (캐릭터가 너무 작지 않게)
+        let sRatio = 60 / (H * 0.5); 
 
-        // 각 부위를 관절(Pivot) 중심으로 그리는 보조 함수
         const drawPart = (part, x, y, pivotX, pivotY, rotation) => {
             let dw = part.sw * sRatio;
             let dh = part.sh * sRatio;
@@ -58,40 +56,39 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
             cCtx.restore();
         };
 
-        // 몸 전체 들썩임 적용
         cCtx.translate(0, bounceY + breathY);
 
-        // [1] 뒤쪽 팔 (오른팔 - 몸통 뒤)
-        drawPart(slices.armR, 14, -30, 0.5, 0.2, -armSwing);
+        // 💡 핵심 교정: Y축 좌표를 위에서부터 아래로 순서대로 배치
+        // 머리가 제일 위(-45), 몸통이 중간(-25), 다리가 제일 아래(-12)
 
-        // [2] 뒤쪽 다리 (오른다리)
-        drawPart(slices.legR, 8, -16, 0.5, 0.2, -legSwing);
+        // [1] 뒤쪽 다리 (오른다리) - 엉덩이 위치
+        drawPart(slices.legR, 6, -12, 0.5, 0.1, -legSwing);
 
-        // [3] 앞쪽 다리 (왼다리)
-        drawPart(slices.legL, -8, -16, 0.5, 0.2, legSwing);
+        // [2] 뒤쪽 팔 (오른팔) - 어깨 위치
+        drawPart(slices.armR, 10, -32, 0.5, 0.1, -armSwing);
 
-        // [4] 몸통 (Torso - 셔츠)
-        drawPart(slices.torso, 0, -28, 0.5, 0.5, 0);
+        // [3] 몸통 (셔츠) - 중심
+        drawPart(slices.torso, 0, -25, 0.5, 0.5, 0);
 
-        // [5] 앞쪽 팔 (왼팔 - 몸통 앞)
-        drawPart(slices.armL, -14, -30, 0.5, 0.2, armSwing);
+        // [4] 앞쪽 다리 (왼다리)
+        drawPart(slices.legL, -6, -12, 0.5, 0.1, legSwing);
 
-        // [6] 머리와 얼굴 조립 (시선 처리 포함)
+        // [5] 앞쪽 팔 (왼팔)
+        drawPart(slices.armL, -10, -32, 0.5, 0.1, armSwing);
+
+        // [6] 머리 및 시선 처리
         cCtx.save();
-        cCtx.translate(0, -52); // 목 위치로 이동
+        cCtx.translate(0, -45); 
         cCtx.rotate(headTilt * Math.PI / 180);
 
-        // 6-1. 머리 윤곽선 렌더링
         let hdW = slices.head.sw * sRatio; 
         let hdH = slices.head.sh * sRatio;
         cCtx.drawImage(playerSprite, slices.head.sx, slices.head.sy, slices.head.sw, slices.head.sh, -hdW*0.5, -hdH*0.5, hdW, hdH);
         
-        // 💡 원하시던 시선 처리 로직: 조이스틱 입력(lookX, lookY)에 따라 눈코입 이동
-        // 캐릭터가 반전되어 있으므로 X축은 절대값(abs)을 사용해 항상 앞쪽으로 쏠리게 합니다.
-        let faceOffsetX = Math.abs(lookX) * 4; // 앞/뒤 시선
-        let faceOffsetY = lookY * 4;           // 위/아래 시선
+        // 조이스틱 방향 시선 처리 (LookX/Y)
+        let faceOffsetX = Math.abs(lookX) * 5; 
+        let faceOffsetY = lookY * 5;
 
-        // 6-2. 얼굴(눈/입) 렌더링 (머리 위에 덧그림)
         let fcW = slices.face.sw * sRatio; 
         let fcH = slices.face.sh * sRatio;
         cCtx.drawImage(playerSprite, slices.face.sx, slices.face.sy, slices.face.sw, slices.face.sh, -fcW*0.5 + faceOffsetX, -fcH*0.5 + faceOffsetY, fcW, fcH);
@@ -99,24 +96,10 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.restore();
 
     } else {
-        // 이미지가 아직 로드되지 않았을 때의 기본 도형 (에러 방지용)
-        let wobble = isMoving ? Math.sin(time * 15) * 0.15 : 0; 
-        let skewX = isMoving ? Math.cos(time * 15) * 0.1 : 0; 
-        cCtx.translate(0, bounceY);
-        cCtx.transform(1, 0, skewX, 1, 0, 0); 
-        cCtx.rotate(wobble);
-
+        // Fallback (도형)
         cCtx.fillStyle = '#fff';
-        cCtx.strokeStyle = '#000';
-        cCtx.lineWidth = 5;
-        cCtx.beginPath();
-        cCtx.roundRect(-14, -8, 28, 28, 10);
-        cCtx.fill(); cCtx.stroke();
-        cCtx.beginPath();
-        cCtx.arc(0, -28, 24, 0, Math.PI * 2);
-        cCtx.fill(); cCtx.stroke();
-        cCtx.fillStyle = '#000';
-        cCtx.beginPath(); cCtx.arc(8, -30, 3, 0, Math.PI*2); cCtx.fill();
+        cCtx.beginPath(); cCtx.arc(0, -45, 20, 0, Math.PI*2); cCtx.fill();
+        cCtx.fillRect(-15, -30, 30, 30);
     }
 
     cCtx.restore();
