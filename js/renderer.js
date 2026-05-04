@@ -21,20 +21,20 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
-    // 1. 애니메이션 변수 (가만히 있으면 walkCycle은 0)
+    // 1. 애니메이션 설정
     let walkCycle = isMoving ? time * 15 : 0;
     let bounceY = isMoving ? Math.abs(Math.sin(walkCycle)) * -4 : 0;
     let breathY = !isMoving ? Math.sin(time * 3) * 1.5 : 0;
-    let legSwing = Math.sin(walkCycle) * 15;
-    let armSwing = Math.sin(walkCycle) * 20;
+    let swing = Math.sin(walkCycle);
 
     cCtx.translate(0, bounceY + breathY);
 
-    // 2. 방향 가중치 (lookX/Y가 0이면 정면 상태가 됨)
-    let bodyX = lookX * 5;    // 몸통 하단 이동
-    let headX = lookX * 12;   // 머리 상단 이동 (머리가 더 많이 움직여야 입체적임)
-    let eyeX = headX + lookX * 4; // 눈은 머리 위에서 한 번 더 이동
-    let eyeY = -42 + (lookY * 5);
+    // 2. 방향성 변수 (lookX/Y가 0이면 정면)
+    // 조이스틱 방향에 따라 부위들이 쏠리는 정도를 조절
+    let bodyX = lookX * 6;     
+    let headX = lookX * 12;    
+    let eyeX = headX + (lookX * 3);
+    let eyeY = -45 + (lookY * 4);
 
     cCtx.lineWidth = 4;
     cCtx.strokeStyle = '#000';
@@ -50,54 +50,57 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.restore();
     };
 
-    // 3. 레이어 순서 결정 (정면/좌/우)
-    let side = 0; 
+    // 3. 방향에 따른 렌더링 레이어 순서 결정
+    // 왼쪽을 볼 때(lookX < 0)는 오른쪽 팔다리가 앞으로, 왼쪽 팔다리가 뒤로 가야 자연스러운 3/4뷰가 됩니다.
+    let side = 0;
     if (lookX > 0.1) side = 1;      // 우측
     else if (lookX < -0.1) side = -1; // 좌측
 
-    // [Step 1] 뒤쪽 부위 (몸통에 가려지는 팔다리)
-    if (side === 1) { // 우측을 볼 때: 왼쪽 부위가 뒤로
-        drawLimb(-14 + bodyX, -8, 12, 16, legSwing);
-        drawLimb(-22 + bodyX, -28, 10, 20, armSwing);
-    } else if (side === -1) { // 좌측을 볼 때: 오른쪽 부위가 뒤로
-        drawLimb(14 + bodyX, -8, 12, 16, -legSwing);
-        drawLimb(22 + bodyX, -28, 10, 20, -armSwing);
-    } else { // 완벽한 정면
-        drawLimb(-15, -8, 12, 16, legSwing);
-        drawLimb(15, -8, 12, 16, -legSwing);
+    // [Step 1] 먼 쪽 팔다리 (몸통 뒤에 그려짐)
+    if (side === 1) { // 우측 응시 -> 왼쪽 팔다리가 뒤로
+        drawLimb(-15 + bodyX, -8, 12, 16, swing * 20); // 왼다리
+        drawLimb(-22 + bodyX, -28, 10, 20, swing * 25); // 왼팔
+    } else if (side === -1) { // 좌측 응시 -> 오른쪽 팔다리가 뒤로
+        drawLimb(15 + bodyX, -8, 12, 16, -swing * 20); // 오른다리
+        drawLimb(22 + bodyX, -28, 10, 20, -swing * 25); // 오른팔
+    } else { // 정면 (다리만 뒤로)
+        drawLimb(-15, -8, 12, 16, swing * 20);
+        drawLimb(15, -8, 12, 16, -swing * 20);
     }
 
     // [Step 2] 눈사람 몸체 (하단 -> 상단)
     // 하단 몸통
     cCtx.beginPath();
-    cCtx.arc(bodyX, -20, 23, 0, Math.PI * 2);
+    cCtx.arc(bodyX, -22, 24, 0, Math.PI * 2);
     cCtx.fill(); cCtx.stroke();
 
     // 상단 머리
     cCtx.beginPath();
-    cCtx.arc(headX, -45, 18, 0, Math.PI * 2);
+    cCtx.arc(headX, -48, 18, 0, Math.PI * 2);
     cCtx.fill(); cCtx.stroke();
 
     // [Step 3] 시선 (눈동자)
     cCtx.fillStyle = '#000';
+    // 눈 사이의 간격도 바라보는 방향에 따라 미세하게 조절하여 입체감을 줌
+    let eyeSpacing = 8 - Math.abs(lookX) * 2; 
     cCtx.beginPath();
-    cCtx.ellipse(eyeX - 8, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
+    cCtx.ellipse(eyeX - eyeSpacing, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
     cCtx.fill();
     cCtx.beginPath();
-    cCtx.ellipse(eyeX + 8, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
+    cCtx.ellipse(eyeX + eyeSpacing, eyeY, 3.5, 7.5, 0, 0, Math.PI * 2);
     cCtx.fill();
 
-    // [Step 4] 앞쪽 부위 (몸통 위를 덮는 팔다리)
+    // [Step 4] 가까운 쪽 팔다리 (몸통 위에 그려짐)
     cCtx.fillStyle = '#fff';
-    if (side === 1) { // 우측을 볼 때: 오른쪽 부위가 앞으로
-        drawLimb(14 + bodyX, -8, 12, 16, -legSwing);
-        drawLimb(22 + bodyX, -28, 10, 20, -armSwing);
-    } else if (side === -1) { // 좌측을 볼 때: 왼쪽 부위가 앞으로
-        drawLimb(-14 + bodyX, -8, 12, 16, legSwing);
-        drawLimb(-22 + bodyX, -28, 10, 20, armSwing);
-    } else { // 정면 팔
-        drawLimb(-24, -28, 10, 20, armSwing);
-        drawLimb(24, -28, 10, 20, -armSwing);
+    if (side === 1) { // 우측 응시 -> 오른쪽 팔다리가 앞으로
+        drawLimb(15 + bodyX, -8, 12, 16, -swing * 20);
+        drawLimb(22 + bodyX, -28, 10, 20, -swing * 25);
+    } else if (side === -1) { // 좌측 응시 -> 왼쪽 팔다리가 앞으로
+        drawLimb(-15 + bodyX, -8, 12, 16, swing * 20);
+        drawLimb(-22 + bodyX, -28, 10, 20, swing * 25);
+    } else { // 정면 응시 -> 양팔 모두 앞으로
+        drawLimb(-22, -28, 10, 20, swing * 25);
+        drawLimb(22, -28, 10, 20, -swing * 25);
     }
 
     cCtx.restore();
