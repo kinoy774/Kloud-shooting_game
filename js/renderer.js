@@ -19,27 +19,36 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         const cols = 14;
         const rows = 8;
         
-        // 소수점으로 인한 밀림 현상을 완벽히 차단하기 위해 반올림합니다.
-        const frameW = Math.round(playerSprite.width / cols);
-        const frameH = Math.round(playerSprite.height / rows);
+        // 투명화 사이트의 오토크롭(여백 잘림)으로 인한 너비 오차를 방지하기 위해,
+        // 세로 높이를 기준으로 정사각형 프레임을 강제로 생성합니다.
+        let frameH = Math.round(playerSprite.height / rows);
+        let frameW = frameH; 
+
+        // 만약 위 공식으로도 미세하게 갈라진다면 아래 주석을 풀고 숫자를 직접 입력해 맞추세요.
+        // frameW = 128; 
+        // frameH = 128;
+        
+        // 이미지가 왼쪽으로 잘렸을 경우를 대비한 오프셋 보정
+        let offsetX = 0; 
+        let offsetY = 0;
 
         let angle = Math.atan2(lookY, lookX);
         let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
+        
         const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
         let currentRow = rowMap[octant];
 
-        // 시간이 소수점으로 증가해도 무조건 정수 단위로만 끊기도록 강제합니다.
         let currentCol = 0;
         if (isMoving) {
             currentCol = Math.floor(time * 12) % cols; 
         }
 
-        // 잘라낼 시작 위치도 무조건 정수로 곱해져서 점프하듯 뚝뚝 끊기며 변합니다.
-        const sx = currentCol * frameW;
-        const sy = currentRow * frameH;
+        // 정확한 1칸 자르기 좌표 계산
+        const sx = offsetX + (currentCol * frameW);
+        const sy = offsetY + (currentRow * frameH);
 
         let drawW = 60; 
-        let drawH = 60 * (frameH / frameW);
+        let drawH = 60;
 
         cCtx.drawImage(
             playerSprite,
