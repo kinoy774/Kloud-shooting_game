@@ -12,7 +12,7 @@
 <div id="game-container">
     <canvas id="bgCanvas"></canvas>
     <canvas id="gameCanvas"></canvas>
-
+    
     <div id="warning-banner">
         <h2 id="warning-text" class="cartoon-text" style="margin:0; font-size: clamp(1.5rem, 6vw, 2.5rem); color: #ff4757; word-break: keep-all; padding: 0 15px; text-align: center;">경고 문구</h2>
         <div id="warning-sub" class="cartoon-text" style="font-size: clamp(0.9rem, 3.5vw, 1.2rem); margin-top: 5px; padding: 0 15px; word-break: keep-all; text-align: center;">준비하세요!</div>
@@ -22,7 +22,7 @@
 
     <div id="hud">
         <div id="exp-container"><div id="exp-bar"></div></div>
-
+        
         <div id="stats-row" style="position: absolute; top: 22px; width: 100%; display: flex; justify-content: space-between; padding: 0 15px; box-sizing: border-box; align-items: flex-start; z-index: 41; pointer-events: none;">
             <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
                 <div id="level-display" class="hud-box" style="margin: 0;">LV. 1</div>
@@ -66,7 +66,7 @@
         <canvas id="menu-canvas"></canvas>
         <div style="z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-top: -50px;">
             <h1 class="cartoon-text" style="font-size: 4.5rem; color: var(--accent); margin-bottom: 40px; line-height: 1.1;">무한슈팅<br>살아남기!</h1>
-
+            
             <button id="continue-btn" onclick="startGame(true)" style="display:none; background:#ff9f43; margin-bottom: 15px;">이어하기</button>
             <button onclick="showOverlay('difficulty-screen')">새 게임 시작</button>
             <button onclick="showOverlay('how-to-play')">게임 방법</button>
@@ -91,10 +91,10 @@
             <h2 class="cartoon-text" style="font-size: 2.2rem; color: #00d2ff; margin-top:0; margin-bottom: 10px;">인게임 상점</h2>
             <div class="cartoon-text" style="font-size: 0.9rem; margin-bottom: 10px; color: #ccc;">(이번 판에서만 적용되는 임시 능력치입니다)</div>
             <div class="cartoon-text" id="shop-gold-display" style="font-size: 1.5rem; color: #f1c40f; margin-bottom: 15px;">보유 금화: 🪙 0</div>
-
+            
             <div id="shop-list-container" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; font-family: 'Pretendard', sans-serif; font-weight: bold;">
             </div>
-
+            
             <button onclick="closeInGameShop()" style="width:100%; margin: 15px 0 0 0; box-sizing: border-box; background: #ff4757; color: #fff;">닫기 (게임 재개)</button>
         </div>
     </div>
@@ -133,7 +133,7 @@
         <div class="cartoon-panel modal-body" style="max-height: 90vh; overflow-y: auto; overflow-x: hidden;">
             <h2 id="level-up-title" class="cartoon-text">LEVEL UP!</h2>
             <div id="choice-container" class="card-container"></div>
-
+            
             <div id="item-detail-panel" class="hidden">
                 <div id="detail-stats-box" class="stat-grid"></div>
                 <div id="detail-perk" class="perk-box hidden"></div>
