@@ -41,16 +41,22 @@
         </div>
     </div>
 
-    <div id="inventory-wrapper" style="display: none;">
-        <div id="inventory-container">
-            <div class="inv-row" id="evolved-inv-row"></div>
-            <div class="inv-row" id="weapon-inv-row"></div>
-            <div class="inv-row" id="acc-inv-row"></div>
-        </div>
-        <div style="display: flex; gap: 8px;">
-            <button onclick="openInGameShop()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #ffeaa7; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans';">🛒 상점</button>
+   <div id="inventory-wrapper" style="display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 45;">
+        
+        <!-- 좌측: 인벤토리 목록 및 가방 닫기 버튼 -->
+        <div style="position: absolute; top: 75px; left: 15px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; pointer-events: auto;">
+            <div id="inventory-container">
+                <div class="inv-row" id="evolved-inv-row"></div>
+                <div class="inv-row" id="weapon-inv-row"></div>
+                <div class="inv-row" id="acc-inv-row"></div>
+            </div>
             <button id="inv-toggle-btn" onclick="toggleInventory()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #fff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #000; font-family: 'Black Han Sans';">▼ 가방 닫기</button>
         </div>
+
+        <!-- 우측 하단 구석: 상점 버튼 -->
+        <button onclick="openInGameShop()" style="pointer-events: auto; position: absolute; bottom: 30px; right: 20px; width: auto; padding: 12px 20px; font-size: 1.2rem; margin: 0; background: #ffeaa7; border: 3px solid #000; border-radius: 10px; box-shadow: 3px 3px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans';">🛒 상점</button>
+        
+    </div>
     </div>
 
     <div id="joystick-area"><div id="joystick-stick"></div></div>
