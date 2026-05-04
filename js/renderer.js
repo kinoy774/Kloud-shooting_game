@@ -15,49 +15,89 @@ export function drawGrid(bgCtx, camX, camY, width, height, gameScale) {
 
 export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving = false, hitTimer = 0, lookX = 0, lookY = 0) {
     cCtx.save();
+    // 1. 캐릭터 위치를 정수로 고정
     cCtx.translate(Math.floor(px), Math.floor(py));
 
+    // 피격 시 깜빡임 효과
     if (hitTimer > 0 && Math.floor(time * 30) % 2 === 0) {
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
-    if (playerSprite && playerSprite.complete && playerSprite.width > 0) {
-        const cols = 16;
-        const rows = 8;
-        const frameW = playerSprite.width / cols;
-        const frameH = playerSprite.height / rows;
+    // 2. 애니메이션을 위한 움직임 계산
+    // 걷기 사이클 (시간에 따라 15의 속도로 반복)
+    let walkCycle = isMoving ? time * 15 : 0;
+    
+    // 팔다리가 앞뒤로 교차하며 흔들리는 각도
+    let legSwing = isMoving ? Math.sin(walkCycle) * 15 : 0; 
+    let armSwing = isMoving ? Math.sin(walkCycle) * 20 : 0; 
+    
+    // 이동 시 위아래로 살짝 통통 튀는 효과
+    let bounceY = isMoving ? Math.abs(Math.sin(walkCycle)) * -4 : 0; 
+    // 가만히 있을 때 미세하게 숨쉬는 효과
+    let breathY = !isMoving ? Math.sin(time * 3) * 1 : 0; 
 
-        let angle = Math.atan2(lookY, lookX);
-        let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
-        const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
-        let currentRow = rowMap[octant];
+    // 캐릭터 몸체 들썩임 적용
+    cCtx.translate(0, bounceY + breathY);
 
-        let currentCol = 0;
-        if (isMoving) {
-            currentCol = Math.floor(time * 12) % cols; 
-        }
+    // 3. 조이스틱 방향에 따른 시선(눈) 이동 거리 계산
+    // 눈이 얼굴 바깥으로 나가지 않도록 이동 반경을 5 픽셀 정도로 제한
+    let eyeOffsetX = lookX * 5;
+    let eyeOffsetY = lookY * 5;
 
-        const sx = Math.floor(currentCol * frameW);
-        const sy = Math.floor(currentRow * frameH);
-        const drawSize = 64; 
+    // 4. 캐릭터 스타일 설정 (검은색 두꺼운 테두리, 흰색 채우기)
+    cCtx.lineWidth = 4;
+    cCtx.strokeStyle = '#000';
+    cCtx.fillStyle = '#fff';
 
-        cCtx.drawImage(
-            playerSprite,
-            sx, sy, Math.floor(frameW), Math.floor(frameH),
-            Math.floor(-drawSize / 2), 
-            Math.floor(-drawSize / 2 - 10), 
-            drawSize, 
-            drawSize
-        );
-    } else {
-        cCtx.fillStyle = '#fff';
-        cCtx.beginPath(); 
-        cCtx.arc(0, -15, 20, 0, Math.PI * 2); 
+    // 부위별 관절 기준 회전 그리기 함수
+    const drawLimb = (x, y, w, h, angle) => {
+        cCtx.save();
+        cCtx.translate(x, y);
+        cCtx.rotate(angle * Math.PI / 180);
+        cCtx.beginPath();
+        cCtx.roundRect(-w/2, 0, w, h, w/2); // 끝이 둥근 팔다리
         cCtx.fill();
-    }
+        cCtx.stroke();
+        cCtx.restore();
+    };
+
+    // --- 그리기 조립 순서 (뒤에서부터 앞으로) ---
+
+    // [1] 뒤쪽 다리와 팔 (왼쪽 부위를 뒤쪽으로 배치)
+    drawLimb(-10, -18, 14, 20, legSwing); // 왼다리
+    drawLimb(-22, -35, 12, 22, armSwing); // 왼팔
+
+    // [2] 몸통 (올려주신 캐릭터처럼 둥글고 통통한 형태)
+    cCtx.beginPath();
+    cCtx.ellipse(0, -25, 24, 26, 0, 0, Math.PI * 2);
+    cCtx.fill();
+    cCtx.stroke();
+
+    // [3] 앞쪽 다리와 팔 (오른쪽 부위는 반대 각도로 흔들림)
+    drawLimb(10, -18, 14, 20, -legSwing); // 오른다리
+    drawLimb(22, -35, 12, 22, -armSwing); // 오른팔
+
+    // [4] 머리 (동그란 형태)
+    cCtx.beginPath();
+    cCtx.arc(0, -55, 26, 0, Math.PI * 2);
+    cCtx.fill();
+    cCtx.stroke();
+
+    // [5] 눈동자 (세로로 길쭉한 캡슐 형태, 조이스틱 방향으로 이동)
+    cCtx.fillStyle = '#000'; // 눈은 검은색으로 채우기
+    
+    // 왼쪽 눈
+    cCtx.beginPath();
+    cCtx.ellipse(-8 + eyeOffsetX, -55 + eyeOffsetY, 3, 8, 0, 0, Math.PI * 2);
+    cCtx.fill();
+    
+    // 오른쪽 눈
+    cCtx.beginPath();
+    cCtx.ellipse(8 + eyeOffsetX, -55 + eyeOffsetY, 3, 8, 0, 0, Math.PI * 2);
+    cCtx.fill();
+
     cCtx.restore();
 }
-
 export function drawFallbackAnimal(cCtx, type, s, time, state = 'normal') {
     if(type === 'mouse') {
         cCtx.fillStyle = '#b2bec3'; cCtx.beginPath(); cCtx.arc(-s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke(); cCtx.beginPath(); cCtx.arc(s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke();
