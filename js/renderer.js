@@ -18,7 +18,7 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     }
 
     if (playerSprite.complete && playerSprite.width > 0) {
-        const cols = 14;
+        const cols = 16;
         const rows = 8;
         
         // 중요: 프레임 크기를 무조건 정수로 계산합니다.
