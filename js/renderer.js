@@ -16,37 +16,37 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     }
 
     if (playerSprite.complete && playerSprite.width > 0) {
-        // 시트 규격 정의
         const cols = 14;
         const rows = 8;
-        const frameW = playerSprite.width / cols;
-        const frameH = playerSprite.height / rows;
+        
+        // 소수점으로 인한 밀림 현상을 완벽히 차단하기 위해 반올림합니다.
+        const frameW = Math.round(playerSprite.width / cols);
+        const frameH = Math.round(playerSprite.height / rows);
 
-        // 조이스틱 입력 기반 각도 및 8방향 계산
         let angle = Math.atan2(lookY, lookX);
         let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
-        
-        // 0:우, 1:우하, 2:하, 3:좌하, 4:좌, 5:좌상, 6:상, 7:우상
         const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
         let currentRow = rowMap[octant];
 
-        // 애니메이션 열(Column) 계산
+        // 시간이 소수점으로 증가해도 무조건 정수 단위로만 끊기도록 강제합니다.
         let currentCol = 0;
         if (isMoving) {
-            currentCol = Math.floor(time * 15) % cols;
+            currentCol = Math.floor(time * 12) % cols; 
         }
 
-        // 화면 렌더링 크기 설정
+        // 잘라낼 시작 위치도 무조건 정수로 곱해져서 점프하듯 뚝뚝 끊기며 변합니다.
+        const sx = currentCol * frameW;
+        const sy = currentRow * frameH;
+
         let drawW = 60; 
         let drawH = 60 * (frameH / frameW);
 
         cCtx.drawImage(
             playerSprite,
-            currentCol * frameW, currentRow * frameH, frameW, frameH,
+            sx, sy, frameW, frameH,
             -drawW / 2, -drawH / 2 - 15, drawW, drawH
         );
     } else {
-        // 이미지 로드 전 임시 출력 도형
         cCtx.fillStyle = '#fff';
         cCtx.beginPath(); cCtx.arc(0, -15, 20, 0, Math.PI*2); cCtx.fill();
     }
