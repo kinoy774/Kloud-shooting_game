@@ -7,8 +7,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
     <style>
-        /* 메인 메뉴 비율 보정용 추가 CSS */
-        #main-menu .menu-content {
+        /* 메인 메뉴 정렬 보정 */
+        #main-menu {
+            display: flex !important;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .menu-content {
             z-index: 20;
             display: flex;
             flex-direction: column;
@@ -16,9 +22,6 @@
             justify-content: center;
             position: relative;
             width: 100%;
-            height: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
         }
     </style>
 </head>
@@ -76,7 +79,7 @@
         </div>
     </div>
 
-    <div id="main-menu" class="overlay hidden" style="background: var(--primary-bg); display: flex; align-items: center; justify-content: center;">
+    <div id="main-menu" class="overlay hidden" style="background: var(--primary-bg);">
         <canvas id="menu-canvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;"></canvas>
         <div class="menu-content">
             <h1 class="cartoon-text" style="font-size: clamp(2.5rem, 10vw, 5rem); color: var(--accent); margin-bottom: 30px; line-height: 1.1; text-align: center;">무한슈팅<br>살아남기!</h1>
@@ -90,21 +93,9 @@
     </div>
 
     <div id="game-over-screen" class="overlay hidden" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.85);">
-        <h2 id="end-title" class="cartoon-text" style="font-size: clamp(3.5rem, 15vw, 5.5rem); color: #ff4757; margin: 0;">전투 불능</h2>
+        <h2 id="end-title" class="cartoon-text" style="font-size: clamp(3rem, 15vw, 5.5rem); color: #ff4757; margin: 0;">전투 불능</h2>
         <p id="result-stats" class="cartoon-text" style="font-size: 1.5rem; color: #fff; margin: 20px 0 40px;"></p>
-        <button onclick="returnToMenu()" style="width: 80%; max-width: 300px; margin: 0;">메인 메뉴로</button>
-    </div>
-
-    <div id="difficulty-screen" class="overlay hidden" style="display: flex; align-items: center; justify-content: center;">
-        <div class="cartoon-panel modal-body">
-            <h2 class="cartoon-text" style="font-size: 2.2rem; color: var(--accent); margin:0;">난이도 선택</h2>
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
-                <button onclick="startGame(false, 'EASY')" style="width:100%; margin:0; background:#2ed573;">EASY</button>
-                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL</button>
-                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD</button>
-            </div>
-            <button onclick="showOverlay('main-menu')" style="width:100%; margin-top: 15px; background:#ccc;">뒤로 가기</button>
-        </div>
+        <button onclick="returnToMenu()" style="width: 80%; max-width: 300px;">메인 메뉴로</button>
     </div>
 </div>
 
