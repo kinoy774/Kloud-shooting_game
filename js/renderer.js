@@ -11,95 +11,44 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     cCtx.save();
     cCtx.translate(px, py);
 
-    // 1. 좌우 반전
-    let isLeft = lookX < 0;
-    cCtx.scale(isLeft ? -1 : 1, 1);
-
-    // 2. 피격 효과
     if (hitTimer > 0 && Math.floor(time * 30) % 2 === 0) {
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
-    // 3. 애니메이션 변수
-    let walkPhase = isMoving ? time * 15 : 0;
-    let legSwing = Math.sin(walkPhase) * 30; 
-    let armSwing = Math.sin(walkPhase) * 40; 
-    let bounceY = isMoving ? Math.abs(Math.sin(walkPhase)) * -3 : 0; 
-    let breathY = !isMoving ? Math.sin(time * 4) * 1.5 : 0;
-    let headTilt = isMoving ? Math.sin(walkPhase) * 4 : Math.sin(time * 2) * 2;
-
     if (playerSprite.complete && playerSprite.width > 0) {
-        let W = playerSprite.width;
-        let H = playerSprite.height;
+        // 시트 규격 정의
+        const cols = 14;
+        const rows = 8;
+        const frameW = playerSprite.width / cols;
+        const frameH = playerSprite.height / rows;
 
-        // 핑크색 가이드라인(2x2) 기반 정밀 슬라이스
-        const slices = {
-            head:  { sx: 0,        sy: 0,       sw: W*0.34, sh: H*0.5 }, // 머리
-            face:  { sx: W*0.34,   sy: 0,       sw: W*0.16, sh: H*0.5 }, // 얼굴
-            armL:  { sx: W*0.5,    sy: 0,       sw: W*0.25, sh: H*0.5 }, // 왼팔
-            armR:  { sx: W*0.75,   sy: 0,       sw: W*0.25, sh: H*0.5 }, // 오른팔
-            legL:  { sx: 0,        sy: H*0.5,   sw: W*0.25, sh: H*0.5 }, // 왼다리
-            legR:  { sx: W*0.25,   sy: H*0.5,   sw: W*0.25, sh: H*0.5 }, // 오른다리
-            torso: { sx: W*0.5,    sy: H*0.5,   sw: W*0.5,  sh: H*0.5 }  // 몸통(셔츠)
-        };
-
-        // 크기 배율 조절 (캐릭터가 너무 작지 않게)
-        let sRatio = 60 / (H * 0.5); 
-
-        const drawPart = (part, x, y, pivotX, pivotY, rotation) => {
-            let dw = part.sw * sRatio;
-            let dh = part.sh * sRatio;
-            cCtx.save();
-            cCtx.translate(x, y); 
-            cCtx.rotate(rotation * Math.PI / 180);
-            cCtx.drawImage(playerSprite, part.sx, part.sy, part.sw, part.sh, -dw * pivotX, -dh * pivotY, dw, dh);
-            cCtx.restore();
-        };
-
-        cCtx.translate(0, bounceY + breathY);
-
-        // 💡 핵심 교정: Y축 좌표를 위에서부터 아래로 순서대로 배치
-        // 머리가 제일 위(-45), 몸통이 중간(-25), 다리가 제일 아래(-12)
-
-        // [1] 뒤쪽 다리 (오른다리) - 엉덩이 위치
-        drawPart(slices.legR, 6, -12, 0.5, 0.1, -legSwing);
-
-        // [2] 뒤쪽 팔 (오른팔) - 어깨 위치
-        drawPart(slices.armR, 10, -32, 0.5, 0.1, -armSwing);
-
-        // [3] 몸통 (셔츠) - 중심
-        drawPart(slices.torso, 0, -25, 0.5, 0.5, 0);
-
-        // [4] 앞쪽 다리 (왼다리)
-        drawPart(slices.legL, -6, -12, 0.5, 0.1, legSwing);
-
-        // [5] 앞쪽 팔 (왼팔)
-        drawPart(slices.armL, -10, -32, 0.5, 0.1, armSwing);
-
-        // [6] 머리 및 시선 처리
-        cCtx.save();
-        cCtx.translate(0, -45); 
-        cCtx.rotate(headTilt * Math.PI / 180);
-
-        let hdW = slices.head.sw * sRatio; 
-        let hdH = slices.head.sh * sRatio;
-        cCtx.drawImage(playerSprite, slices.head.sx, slices.head.sy, slices.head.sw, slices.head.sh, -hdW*0.5, -hdH*0.5, hdW, hdH);
+        // 조이스틱 입력 기반 각도 및 8방향 계산
+        let angle = Math.atan2(lookY, lookX);
+        let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
         
-        // 조이스틱 방향 시선 처리 (LookX/Y)
-        let faceOffsetX = Math.abs(lookX) * 5; 
-        let faceOffsetY = lookY * 5;
+        // 0:우, 1:우하, 2:하, 3:좌하, 4:좌, 5:좌상, 6:상, 7:우상
+        const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
+        let currentRow = rowMap[octant];
 
-        let fcW = slices.face.sw * sRatio; 
-        let fcH = slices.face.sh * sRatio;
-        cCtx.drawImage(playerSprite, slices.face.sx, slices.face.sy, slices.face.sw, slices.face.sh, -fcW*0.5 + faceOffsetX, -fcH*0.5 + faceOffsetY, fcW, fcH);
-        
-        cCtx.restore();
+        // 애니메이션 열(Column) 계산
+        let currentCol = 0;
+        if (isMoving) {
+            currentCol = Math.floor(time * 15) % cols;
+        }
 
+        // 화면 렌더링 크기 설정
+        let drawW = 60; 
+        let drawH = 60 * (frameH / frameW);
+
+        cCtx.drawImage(
+            playerSprite,
+            currentCol * frameW, currentRow * frameH, frameW, frameH,
+            -drawW / 2, -drawH / 2 - 15, drawW, drawH
+        );
     } else {
-        // Fallback (도형)
+        // 이미지 로드 전 임시 출력 도형
         cCtx.fillStyle = '#fff';
-        cCtx.beginPath(); cCtx.arc(0, -45, 20, 0, Math.PI*2); cCtx.fill();
-        cCtx.fillRect(-15, -30, 30, 30);
+        cCtx.beginPath(); cCtx.arc(0, -15, 20, 0, Math.PI*2); cCtx.fill();
     }
 
     cCtx.restore();
