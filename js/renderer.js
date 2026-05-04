@@ -17,38 +17,30 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
-    if (playerSprite.complete && playerSprite.width > 0) {
-        // 💡 사용자 확인 결과: 16x8 규격 적용
+    // 💡 수정된 부분: playerSprite 객체가 정상적으로 존재하는지 먼저 검사합니다.
+    if (playerSprite && playerSprite.complete && playerSprite.width > 0) {
         const cols = 16;
         const rows = 8;
         
-        // 이미지 전체 크기를 열/행 수로 나누어 정확한 한 칸의 크기를 구함
         const frameW = playerSprite.width / cols;
         const frameH = playerSprite.height / rows;
 
-        // 조이스틱 방향 계산 (8방향)
         let angle = Math.atan2(lookY, lookX);
         let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
         
-        // 8방향 시트 행 매핑 (이미지 순서에 따라 조정 가능)
         const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
         let currentRow = rowMap[octant];
 
-        // 2. 애니메이션 프레임 결정 (무조건 정수로 계산)
         let currentCol = 0;
         if (isMoving) {
-            // time에 따라 0부터 15까지 정수로 딱딱 끊겨서 변함
             currentCol = Math.floor(time * 12) % cols; 
         }
 
-        // 3. 자를 위치(sx, sy) 계산 시 Math.floor를 사용하여 0.1픽셀의 오차도 허용하지 않음
         const sx = Math.floor(currentCol * frameW);
         const sy = Math.floor(currentRow * frameH);
 
-        // 화면에 출력할 크기
         const drawSize = 64; 
 
-        // 4. 드로우 이미지 호출 (모든 수치를 정수화하여 스크롤 현상 차단)
         cCtx.drawImage(
             playerSprite,
             sx, sy, Math.floor(frameW), Math.floor(frameH),
@@ -66,6 +58,7 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
 
     cCtx.restore();
 }
+
 export function drawFallbackAnimal(cCtx, type, s, time, state = 'normal') {
     if(type === 'mouse') {
         cCtx.fillStyle = '#b2bec3'; cCtx.beginPath(); cCtx.arc(-s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke(); cCtx.beginPath(); cCtx.arc(s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke();
