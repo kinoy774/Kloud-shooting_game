@@ -1,8 +1,6 @@
 import { UPG_INFO, WEAPONS_DATA, ACC_DATA, EVOLVE_DATA, SPAWN_TIMELINE, MONSTERS_DATA } from './data.js';
 
-// 주인공 캐릭터 이미지 로드
-const playerSprite = new Image();
-playerSprite.src = './character/주인공.png';
+
 
 // 인게임 빌드업 상점 및 난이도 변수
 let runGold = 0;           
