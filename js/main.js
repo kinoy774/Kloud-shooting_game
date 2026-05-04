@@ -669,7 +669,7 @@ function update(dt) {
     player.hp = Math.min(player.maxHp, player.hp + (0.525 + player.stats.regen) * dt);
     player.lookX = joystick.lastX; player.lookY = joystick.lastY; player.isMoving = (Math.abs(joystick.x) > 0.05 || Math.abs(joystick.y) > 0.05);
 
-    if(player.hitTimer > 0) player.hitTimer -= dt; if(shake > 0) shake -= dt * 3;
+    if(player.hitTimer > 0) player.hitTimer -= dt; if(shake > 0) shake -= dt * 25;
     if (isTimeStopped) { timeStopTimer -= dt; if (timeStopTimer <= 0) isTimeStopped = false; }
     
     if (bossRewardTimer > 0) {
@@ -758,7 +758,7 @@ function update(dt) {
             if(d < e.size/2 + 20 && player.hitTimer <= 0) { 
                 let finalDmg = Math.max(1, e.dmg * (1 - player.stats.def)); player.hp -= finalDmg; 
                 player.hitTimer = 0.25; 
-                shake = 25; 
+                shake = 10; 
                 if(player.hp <= 0) gameOver(e.id === 'reaper'); 
             }
         }
@@ -801,7 +801,7 @@ function update(dt) {
             let d = dist(p.x, p.y, player.x, player.y);
             if (d < 25 && player.hitTimer <= 0) {
                 let finalDmg = Math.max(1, p.dmg * (1 - player.stats.def));
-                player.hp -= finalDmg; player.hitTimer = 0.25; shake = 25;
+                player.hp -= finalDmg; player.hitTimer = 0.25; shake = 7;
                 if(player.hp <= 0) gameOver();
                 p.life = 0;
             }
