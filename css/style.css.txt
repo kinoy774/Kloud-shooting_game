@@ -1,0 +1,156 @@
+:root {
+    --primary-bg: #1a1a2e;
+    --accent: #ffce00;
+    --text: #ffffff;
+    --hp-color: #2ed573;
+    --gemini-color: #4285f4;
+    --weapon-color: #ff7f50;
+    --acc-color: #1e90ff;
+    --evolve-color: #a55eea;
+    --border: #000000;
+}
+
+body, html {
+    margin: 0; padding: 0; width: 100%; height: 100%;
+    overflow: hidden; background-color: #111;
+    font-family: 'Black Han Sans', sans-serif;
+    user-select: none; touch-action: none;
+    display: flex; justify-content: center; align-items: center;
+}
+
+#game-container { 
+    position: relative; 
+    width: 100vw; height: calc(100vw * 16 / 9);
+    max-width: calc(100vh * 9 / 16); max-height: 100vh;
+    background: #2d5a27; overflow: hidden;
+    box-shadow: 0 0 20px rgba(0,0,0,0.8);
+}
+
+.cartoon-text {
+    color: #fff;
+    text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+    letter-spacing: 1px;
+}
+
+.cartoon-panel {
+    background: #2b2b36;
+    border: 5px solid var(--border);
+    border-radius: 20px;
+    box-shadow: 6px 6px 0 #000;
+}
+
+canvas { display: block; position: absolute; top: 0; left: 0; }
+#menu-canvas { z-index: 10; width: 100%; height: 100%; position: absolute; top: 0; left: 0; pointer-events: none; }
+
+.overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(26, 26, 46, 0.95);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 100; text-align: center;
+}
+.hidden { display: none !important; }
+
+button {
+    padding: 12px 24px; margin: 8px; font-size: 1.3rem; font-family: 'Black Han Sans', sans-serif;
+    cursor: pointer; background: var(--accent); color: #000;
+    border: 4px solid var(--border); border-radius: 12px;
+    width: 260px; transition: 0.1s; box-shadow: 0 4px 0 #000;
+    display: block;
+}
+button:active:not(:disabled) { transform: translateY(4px); box-shadow: 0 0px 0 #000; }
+button:disabled { opacity: 0.5; background: #888; cursor: not-allowed; }
+
+#hud { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+    z-index: 40; pointer-events: none; display: none;
+}
+        
+#exp-container { 
+    position: absolute; top: 0; left: 0; width: 100%; height: 16px; 
+    background: #222; border-bottom: 4px solid #000; z-index: 41;
+}
+#exp-bar { width: 0%; height: 100%; background: #00d2ff; transition: 0.2s linear; }
+
+.hud-box {
+    background: #fff; color: #000; border: 3px solid #000; border-radius: 8px; 
+    padding: 4px 10px; font-size: 1.1rem; font-weight: bold; box-shadow: 2px 2px 0 #000;
+}
+
+#inventory-wrapper {
+    position: absolute; bottom: max(15px, env(safe-area-inset-bottom)); right: 15px; 
+    display: flex; flex-direction: column; align-items: flex-end; z-index: 50; pointer-events: auto;
+}
+        
+#inventory-container { 
+    display: flex; flex-direction: column; gap: 4px; transition: 0.3s transform ease, 0.3s opacity ease; transform-origin: bottom right; pointer-events: none; margin-bottom: 8px;
+}
+
+.inv-row { display: flex; gap: 4px; justify-content: flex-end; align-items: center; }
+.inv-slot {
+    width: 32px; height: 32px; background: rgba(255,255,255,0.9); border: 2px solid #000;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    box-shadow: 2px 2px 0 #000; position: relative;
+}
+.inv-slot .lv-tag {
+    position: absolute; bottom: -4px; right: -4px; font-size: 0.6rem; background: var(--accent); color: #000;
+    padding: 1px 4px; border-radius: 4px; border: 1px solid #000; z-index: 2;
+}
+.inv-slot.evolved { background: var(--evolve-color); }
+
+.modal-body { width: 95%; max-width: 500px; padding: 20px 15px; }
+#level-up-title { font-size: 2.5rem; color: var(--accent); margin: 0 0 15px 0; }
+        
+.card-container { display: flex; flex-direction: column; gap: 12px; align-items: center; width: 100%; margin-top: 10px; }
+.card {
+    background: #fff; border: 4px solid #000; border-radius: 15px; 
+    width: 100%; padding: 12px 15px; box-sizing: border-box;
+    cursor: pointer; transition: 0.1s; position: relative; box-shadow: 4px 4px 0 #000;
+    display: flex; flex-direction: row; align-items: center; justify-content: flex-start; text-align: left;
+}
+.card:active { transform: translateY(2px); box-shadow: 2px 2px 0 #000; }
+.card.selected { background: #ffeaa7; transform: scale(1.02); border-color: #ff4757; }
+        
+.card .icon-display { font-size: 2.5rem; margin-right: 15px; text-shadow: 1px 1px 0 #000; }
+.card .card-info { display: flex; flex-direction: column; flex-grow: 1; }
+.card .name-display { font-size: 1.2rem; font-weight: 900; color: #000; margin: 0; }
+.card .desc-display { font-size: 0.8rem; color: #444; margin-top: 6px; line-height: 1.4; word-break: keep-all; overflow-wrap: break-word; font-family: 'Pretendard', sans-serif; font-weight: bold; }
+.card.evolve-choice { background: #ffdfba; }
+
+#item-detail-panel { margin-top: 10px; padding: 10px; background: #fff; border: 4px solid #000; border-radius: 15px; text-align: center; }
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; margin-bottom: 8px; background: #f1f2f6; border: 2px solid #000; border-radius: 10px; padding: 10px; font-family: 'Pretendard', sans-serif; font-weight: bold; text-align: left; }
+.stat-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #000; white-space: nowrap; }
+.stat-up { color: #ff4757; }
+.perk-box { background: #ffeaa7; border: 2px dashed #d63031; border-radius: 10px; padding: 8px; margin-bottom: 8px; font-family: 'Pretendard', sans-serif; font-weight: bold; color: #d63031; font-size: 0.85rem; line-height: 1.3; text-align: left; word-break: keep-all; }
+#detail-combo { font-size: 0.95rem; color: #d63031; font-family: 'Pretendard', sans-serif; font-weight: bold; word-break: keep-all; }
+
+#joystick-area {
+    position: absolute; width: 100px; height: 100px;
+    background: rgba(0,0,0,0.3); border: 4px solid rgba(255,255,255,0.5); border-radius: 50%; display: none; z-index: 50; pointer-events: none;
+    transform: translate(-50%, -50%);
+}
+#joystick-stick {
+    position: absolute; top: 50%; left: 50%; width: 40px; height: 40px;
+    background: #ff4757; border: 3px solid #fff; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+}
+
+#warning-banner { position: absolute; top: 25%; left: 0; width: 100%; max-width: 100%; background: #000; border-top: 8px solid #ff4757; border-bottom: 8px solid #ff4757; padding: 15px 0; opacity: 0; transform: scaleY(0); transition: 0.3s; z-index: 250; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+#warning-banner.show { opacity: 1; transform: scaleY(1); }
+
+.option-group { display: flex; align-items: center; justify-content: space-between; margin: 15px 0; border-bottom: 2px dashed #666; padding-bottom: 15px; }
+.toggle-btn { background: #ff4757; color: white; border: 3px solid #000; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-family: 'Black Han Sans'; box-shadow: 3px 3px 0 #000; }
+.toggle-btn.on { background: #2ed573; }
+
+.upg-row { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; margin-bottom: 8px; border: 2px solid #555; }
+.upg-info { display: flex; flex-direction: column; align-items: flex-start; }
+.upg-name { font-size: 1.1rem; color: #fff; margin-bottom: 4px; }
+.upg-level { font-size: 0.9rem; color: #ffce00; font-family: 'Black Han Sans'; }
+.upg-buy-btn { background: #2ed573; border: 3px solid #000; border-radius: 8px; padding: 6px 12px; font-family: 'Black Han Sans'; cursor: pointer; color: #000; box-shadow: 2px 2px 0 #000; font-size: 1rem; width: auto; margin: 0; }
+.upg-buy-btn:disabled { background: #7f8fa6; cursor: not-allowed; box-shadow: none; transform: translateY(2px); }
+
+#timer { font-size: 2.2rem !important; }
+@media (max-width: 450px) {
+    #timer { font-size: 1.8rem !important; }
+    .hud-box { font-size: 0.9rem !important; padding: 3px 8px !important; }
+    #hp-container { width: 70px !important; height: 10px !important; }
+    .heart-icon { font-size: 0.8rem !important; }
+}
