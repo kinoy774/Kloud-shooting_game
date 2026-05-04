@@ -10,7 +10,7 @@ export function drawGrid(bgCtx, camX, camY, width, height, gameScale) {
 export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving = false, hitTimer = 0, lookX = 0, lookY = 0) {
     cCtx.save();
     
-    // 1. 캐릭터 위치를 정수로 변환하여 흔들림 방지
+    // 1. 캐릭터 위치를 정수로 고정 (픽셀 흔들림 방지)
     cCtx.translate(Math.floor(px), Math.floor(py));
 
     if (hitTimer > 0 && Math.floor(time * 30) % 2 === 0) {
@@ -18,39 +18,40 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     }
 
     if (playerSprite.complete && playerSprite.width > 0) {
+        // 💡 사용자 확인 결과: 16x8 규격 적용
         const cols = 16;
         const rows = 8;
         
-        // 중요: 프레임 크기를 무조건 정수로 계산합니다.
-        const frameW = Math.floor(playerSprite.width / cols);
-        const frameH = Math.floor(playerSprite.height / rows);
+        // 이미지 전체 크기를 열/행 수로 나누어 정확한 한 칸의 크기를 구함
+        const frameW = playerSprite.width / cols;
+        const frameH = playerSprite.height / rows;
 
-        // 방향 계산
+        // 조이스틱 방향 계산 (8방향)
         let angle = Math.atan2(lookY, lookX);
         let octant = Math.round(8 * angle / (2 * Math.PI) + 8) % 8;
+        
+        // 8방향 시트 행 매핑 (이미지 순서에 따라 조정 가능)
         const rowMap = [3, 7, 1, 6, 2, 4, 0, 5];
         let currentRow = rowMap[octant];
 
-        // 2. 애니메이션 프레임 인덱스를 정수로 강제 고정
-        // time이 밀리초 단위라면 속도를 조절(예: 0.01)하여 너무 빠르지 않게 잡습니다.
+        // 2. 애니메이션 프레임 결정 (무조건 정수로 계산)
         let currentCol = 0;
         if (isMoving) {
-            // Math.floor를 통해 0, 1, 2... 처럼 정수 단위로만 점프하게 만듭니다.
+            // time에 따라 0부터 15까지 정수로 딱딱 끊겨서 변함
             currentCol = Math.floor(time * 12) % cols; 
         }
 
-        // 3. 소수점 오차를 완전히 제거하기 위해 모든 좌표에 Math.floor 적용
-        // 이 부분이 "스크롤" 현상을 막는 핵심 인터페이스 로직입니다.
+        // 3. 자를 위치(sx, sy) 계산 시 Math.floor를 사용하여 0.1픽셀의 오차도 허용하지 않음
         const sx = Math.floor(currentCol * frameW);
         const sy = Math.floor(currentRow * frameH);
 
-        // 화면에 그려질 크기 (정수로 고정)
+        // 화면에 출력할 크기
         const drawSize = 64; 
 
-        // 4. drawImage의 모든 인자를 정수로 전달하여 픽셀 밀림을 방지합니다.
+        // 4. 드로우 이미지 호출 (모든 수치를 정수화하여 스크롤 현상 차단)
         cCtx.drawImage(
             playerSprite,
-            sx, sy, frameW, frameH,
+            sx, sy, Math.floor(frameW), Math.floor(frameH),
             Math.floor(-drawSize / 2), 
             Math.floor(-drawSize / 2 - 10), 
             drawSize, 
@@ -63,8 +64,6 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.fill();
     }
 
-    cCtx.restore();
-}
     cCtx.restore();
 }
 export function drawFallbackAnimal(cCtx, type, s, time, state = 'normal') {
