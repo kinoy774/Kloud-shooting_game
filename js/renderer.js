@@ -17,27 +17,32 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
     cCtx.save();
     cCtx.translate(Math.floor(px), Math.floor(py));
 
-    // 피격 시 깜빡임 효과
     if (hitTimer > 0 && Math.floor(time * 30) % 2 === 0) {
         cCtx.filter = 'brightness(2) sepia(1) hue-rotate(-50deg) saturate(5)';
     }
 
+    // --- 애니메이션 계산 ---
     let walkCycle = isMoving ? time * 15 : 0;
     let legSwing = isMoving ? Math.sin(walkCycle) * 15 : 0; 
     let armSwing = isMoving ? Math.sin(walkCycle) * 20 : 0; 
     let bounceY = isMoving ? Math.abs(Math.sin(walkCycle)) * -4 : 0; 
-    let breathY = !isMoving ? Math.sin(time * 3) * 1 : 0; 
+    let breathY = !isMoving ? Math.sin(time * 3) * 1.2 : 0; 
 
     cCtx.translate(0, bounceY + breathY);
 
-    let eyeOffsetX = lookX * 5;
-    let eyeOffsetY = lookY * 5;
+    // --- 방향(입체감) 계산 ---
+    // lookX/Y는 -1 ~ 1 사이의 값입니다. 이를 이용해 "바라보는 쪽"으로 부위들을 쏠리게 합니다.
+    let bodyTilt = lookX * 5;      // 몸통이 바라보는 방향으로 이동할 양
+    let eyeShiftX = lookX * 10;    // 눈이 더 많이 이동하여 고개를 돌린 느낌을 줌
+    let eyeShiftY = lookY * 4;     // 위아래 시선 처리
+    let limbDepth = lookX * 4;     // 바라보는 방향의 팔다리가 더 벌어지게 함
 
     cCtx.lineWidth = 4;
     cCtx.strokeStyle = '#000';
     cCtx.fillStyle = '#fff';
 
-    const drawLimb = (x, y, w, h, angle) => {
+    // 부위 그리기 함수
+    const drawPart = (x, y, w, h, angle) => {
         cCtx.save();
         cCtx.translate(x, y);
         cCtx.rotate(angle * Math.PI / 180);
@@ -48,33 +53,40 @@ export function drawActualPlayer(cCtx, playerSprite, px, py, time = 0, isMoving 
         cCtx.restore();
     };
 
-    // [1] 뒤쪽 다리와 팔
-    drawLimb(-10, -5, 12, 18, legSwing);
-    drawLimb(-22, -25, 10, 20, armSwing);
+    // [1] 뒤쪽 팔다리 (움직이는 방향 반대쪽은 몸 뒤로 살짝 숨김)
+    // lookX가 양수(우측)면 x좌표가 작아져서 왼쪽 팔다리가 몸 뒤쪽 중심으로 모입니다.
+    drawPart(-12 + limbDepth, -5, 12, 18, legSwing);  // 뒤쪽 다리
+    drawPart(-24 + limbDepth, -25, 10, 20, armSwing); // 뒤쪽 팔
 
-    // [2] 몸통 (하나의 둥근 캡슐 형태로 통합하고 Y축을 아래로 내림)
+    // [2] 몸통 (바라보는 방향으로 미세하게 중심 이동)
     cCtx.beginPath();
-    cCtx.roundRect(-22, -45, 44, 46, 22);
+    cCtx.roundRect(-22 + bodyTilt, -45, 44, 46, 22);
     cCtx.fill();
     cCtx.stroke();
 
-    // [3] 앞쪽 다리와 팔
-    drawLimb(10, -5, 12, 18, -legSwing);
-    drawLimb(22, -25, 10, 20, -armSwing);
+    // [3] 앞쪽 팔다리 (움직이는 방향 쪽은 몸 바깥으로 더 나옴)
+    drawPart(12 + limbDepth, -5, 12, 18, -legSwing);  // 앞쪽 다리
+    drawPart(24 + limbDepth, -25, 10, 20, -armSwing); // 앞쪽 팔
 
-    // [4] 눈동자 (내려간 몸통 위치에 맞게 좌표 수정)
+    // [4] 눈동자 (고개를 돌린 것처럼 시선 처리)
     cCtx.fillStyle = '#000'; 
-    
+    // 눈 사이의 간격도 바라보는 방향에 따라 미세하게 조절 (원근감)
+    let leftEyeX = -8 + eyeShiftX;
+    let rightEyeX = 8 + eyeShiftX;
+
+    // 왼쪽 눈
     cCtx.beginPath();
-    cCtx.ellipse(-8 + eyeOffsetX, -30 + eyeOffsetY, 3, 7, 0, 0, Math.PI * 2);
+    cCtx.ellipse(leftEyeX, -30 + eyeShiftY, 3, 7, 0, 0, Math.PI * 2);
     cCtx.fill();
     
+    // 오른쪽 눈
     cCtx.beginPath();
-    cCtx.ellipse(8 + eyeOffsetX, -30 + eyeOffsetY, 3, 7, 0, 0, Math.PI * 2);
+    cCtx.ellipse(rightEyeX, -30 + eyeShiftY, 3, 7, 0, 0, Math.PI * 2);
     cCtx.fill();
 
     cCtx.restore();
 }
+
 export function drawFallbackAnimal(cCtx, type, s, time, state = 'normal') {
     if(type === 'mouse') {
         cCtx.fillStyle = '#b2bec3'; cCtx.beginPath(); cCtx.arc(-s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke(); cCtx.beginPath(); cCtx.arc(s/2.5, -s/2.5, s/3, 0, Math.PI*2); cCtx.fill(); cCtx.stroke();
