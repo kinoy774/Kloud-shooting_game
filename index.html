@@ -7,33 +7,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./css/style.css">
     <style>
-        /* 메인 메뉴 정렬 보정 */
-        #main-menu {
-            display: flex !important;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .menu-content {
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            width: 100%;
-        }
+        #main-menu { display: flex !important; flex-direction: column; align-items: center; justify-content: center; }
+        .menu-content { z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; width: 100%; }
     </style>
 </head>
 <body>
-
 <div id="game-container">
     <canvas id="bgCanvas"></canvas>
     <canvas id="gameCanvas"></canvas>
     
     <div id="warning-banner">
-        <h2 id="warning-text" class="cartoon-text" style="margin:0; font-size: clamp(1.5rem, 6vw, 2.5rem); color: #ff4757; word-break: keep-all; padding: 0 15px; text-align: center;">경고 문구</h2>
-        <div id="warning-sub" class="cartoon-text" style="font-size: clamp(0.9rem, 3.5vw, 1.2rem); margin-top: 5px; padding: 0 15px; word-break: keep-all; text-align: center;">준비하세요!</div>
+        <h2 id="warning-text" class="cartoon-text" style="margin:0; font-size: clamp(1.5rem, 6vw, 2.5rem); color: #ff4757; text-align: center;">경고</h2>
+        <div id="warning-sub" class="cartoon-text" style="font-size: clamp(0.9rem, 3.5vw, 1.2rem); margin-top: 5px; text-align: center;">준비하세요!</div>
     </div>
 
     <div id="toast-msg" class="cartoon-text" style="position:absolute; top:130px; left:50%; transform:translateX(-50%); opacity:0; color:#fff; background:#000; border: 4px solid #fff; padding:10px 30px; border-radius:15px; z-index:90; font-size:1.2rem; transition:0.2s;"></div>
@@ -44,7 +29,7 @@
             <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
                 <div id="level-display" class="hud-box" style="margin: 0;">LV. 1</div>
                 <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-                    <span class="heart-icon" style="font-size: 1rem; text-shadow: 2px 2px 0 #000; line-height: 1;">❤️</span>
+                    <span class="heart-icon" style="font-size: 1rem; text-shadow: 2px 2px 0 #000;">❤️</span>
                     <div id="hp-container" style="margin: 0; width: 85px; height: 12px; background: #fff; border: 3px solid #000; border-radius: 6px; overflow: hidden; box-shadow: 2px 2px 0 #000;">
                         <div id="hp-bar" style="width: 100%; height: 100%; background: var(--hp-color); transition: 0.2s;"></div>
                     </div>
@@ -93,12 +78,45 @@
     </div>
 
     <div id="game-over-screen" class="overlay hidden" style="display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.85);">
-        <h2 id="end-title" class="cartoon-text" style="font-size: clamp(3rem, 15vw, 5.5rem); color: #ff4757; margin: 0;">전투 불능</h2>
+        <h2 id="end-title" class="cartoon-text" style="font-size: clamp(3rem, 15vw, 5.5rem); color: #ff4757;">전투 불능</h2>
         <p id="result-stats" class="cartoon-text" style="font-size: 1.5rem; color: #fff; margin: 20px 0 40px;"></p>
         <button onclick="returnToMenu()" style="width: 80%; max-width: 300px;">메인 메뉴로</button>
     </div>
-</div>
 
+    <div id="difficulty-screen" class="overlay hidden" style="display: flex; align-items: center; justify-content: center;">
+        <div class="cartoon-panel modal-body">
+            <h2 class="cartoon-text" style="font-size: 2.2rem; color: var(--accent); margin:0;">난이도 선택</h2>
+            <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+                <button onclick="startGame(false, 'EASY')" style="width:100%; margin:0; background:#2ed573;">EASY</button>
+                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL</button>
+                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD</button>
+            </div>
+            <button onclick="showOverlay('main-menu')" style="width:100%; margin-top: 15px; background:#ccc;">뒤로 가기</button>
+        </div>
+    </div>
+
+    <div id="level-up-screen" class="overlay hidden" style="display: flex; align-items: center; justify-content: center;">
+        <div class="cartoon-panel modal-body" style="width: 90%; max-width: 450px;">
+            <h2 id="level-up-title" class="cartoon-text" style="margin:0;">LEVEL UP!</h2>
+            <div id="choice-container" class="card-container"></div>
+            <div id="item-detail-panel" class="hidden">
+                <div id="detail-stats-box"></div>
+                <div id="detail-perk"></div>
+                <div id="detail-combo"></div>
+            </div>
+            <button id="confirm-select-btn" onclick="confirmSelection()" style="width: 100%; margin-top: 15px; background: #2ed573;" disabled>선택 완료</button>
+        </div>
+    </div>
+
+    <div id="in-game-shop-screen" class="overlay hidden" style="display: flex; align-items: center; justify-content: center; z-index: 200;">
+        <div class="cartoon-panel modal-body" style="width: 90%; max-width: 400px;">
+            <h2 class="cartoon-text" style="font-size: 2rem; color: #00d2ff; margin:0;">인게임 상점</h2>
+            <div id="shop-gold-display" class="cartoon-text" style="font-size: 1.5rem; color: #f1c40f; margin: 10px 0;">🪙 0</div>
+            <div id="shop-list-container" style="max-height: 50vh; overflow-y: auto;"></div>
+            <button onclick="closeInGameShop()" style="width:100%; margin-top: 15px; background: #ff4757; color: #fff;">닫기</button>
+        </div>
+    </div>
+</div>
 <script type="module" src="./js/main.js"></script>
 </body>
 </html>
