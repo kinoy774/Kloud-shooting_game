@@ -1,6 +1,6 @@
 export const UPG_INFO = {
     atk: { name: '공격력 증폭', icon: '⚔️', desc: '무기 피해량 증가', maxLv: 100, getVal: (lv) => `+${lv * 2}%`, mult: 1 },
-    def: { name: '단단한 피부', icon: '🛡️', desc: '받는 피해량 감소', maxLv: 50, getVal: (lv) => `-${lv * 2}%`, mult: 1 },
+    def: { name: '단단한 피부', icon: '🛡️', desc: '받는 피해량 감소', maxLv: 50, getVal: (lv) => `-${lv * 1}%`, mult: 1 },
     hp: { name: '생명력 훈련', icon: '❤️', desc: '최대 체력 증가', maxLv: 100, getVal: (lv) => `+${lv * 15}`, mult: 1 },
     regen: { name: '자연 치유', icon: '✨', desc: '초당 체력 회복', maxLv: 50, getVal: (lv) => `+${(lv * 0.63).toFixed(1)}/초`, mult: 1 },
     speed: { name: '날렵한 발걸음', icon: '👟', desc: '이동 속도 증가', maxLv: 20, getVal: (lv) => `+${lv * 1.5}%`, mult: 3 },
@@ -28,7 +28,7 @@ export const ACC_DATA = [
     { id: 'area_up', name: '거대 구슬', icon: '📏', type: '보조', maxLevel: 4, desc: '공격 크기 및 사거리가 확장됩니다.', growth: 0.2, effect: 'area', pair: '회전 도끼' },
     { id: 'exp_up', name: '지혜 책', icon: '📖', type: '보조', maxLevel: 4, desc: '획득하는 경험치 양이 증가합니다.', growth: 0.3, effect: 'exp', pair: '나무 활' },
     { id: 'pickup_up', name: '자석', icon: '🧲', type: '보조', maxLevel: 4, desc: '아이템과 보석을 끌어당기는 범위가 증가합니다.', growth: 0.4, effect: 'pickup', pair: '부메랑' },
-    { id: 'def_up', name: '강철 갑옷', icon: '🛡️', type: '보조', maxLevel: 4, desc: '적에게 받는 피해량이 눈에 띄게 감소합니다.', growth: 0.1, effect: 'def', pair: '화염병' },
+    { id: 'def_up', name: '강철 갑옷', icon: '🛡️', type: '보조', maxLevel: 4, desc: '적에게 받는 피해량이 눈에 띄게 감소합니다.', growth: 0.05, effect: 'def', pair: '화염병' },
     { id: 'regen_up', name: '재생 물약', icon: '🧪', type: '보조', maxLevel: 4, desc: '시간이 지날수록 체력을 지속적으로 회복합니다.', growth: 2.1, effect: 'regen', pair: '에너지 빔' }
 ];
 
