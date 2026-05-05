@@ -665,7 +665,6 @@ function update(dt) {
     autoSaveTimer += dt;
     if (autoSaveTimer >= 3) { saveGame(); autoSaveTimer = 0; }
 
-    // 플레이어 이동 속도 보정 (dt 적용)
     player.x += joystick.x * player.speed * dt * 60; 
     player.y += joystick.y * player.speed * dt * 60; 
     
@@ -707,7 +706,6 @@ function update(dt) {
             if (d === 0) d = 1;
             let vx = (player.x - e.x)/d, vy = (player.y - e.y)/d;
             
-            // 몬스터 이동 로직에 dt 적용
             if (e.id === 'cat') {
                 if (e.state === 'normal') {
                     if (e.cooldown > 0) e.cooldown -= dt;
@@ -725,7 +723,6 @@ function update(dt) {
                     }
                 } else if (e.state === 'dashing') {
                     e.dashTimer -= dt;
-                    // 대시 속도 보정
                     e.x += (e.dashVx * 7 * dt * 60) + e.kbX; 
                     e.y += (e.dashVy * 7 * dt * 60) + e.kbY;
                     if (e.dashTimer <= 0) { e.state = 'normal'; e.cooldown = 2.0; }
@@ -891,7 +888,6 @@ function update(dt) {
 
     for (let i = gems.length - 1; i >= 0; i--) {
         let g = gems[i]; let d = dist(player.x, player.y, g.x, g.y); let pickupRange = 84 * player.stats.pickup;
-        // 보석 수집 이동 보정
         if (g.isMagnetized || d < pickupRange) { 
             g.isMagnetized = true; 
             const ang = Math.atan2(player.y - g.y, player.x - g.x); 
@@ -1177,6 +1173,35 @@ function gameOver(isReaperDeath = false) {
     }
     document.getElementById('result-stats').innerText = `기록: ${Math.floor(gameTime/60)}분 ${Math.floor(gameTime%60)}초 생존 / 처치 수: ${kills}`; 
 }
+
+// 상태창 토글 함수
+function toggleStatus() {
+    const screen = document.getElementById('status-screen');
+    if (screen.classList.contains('hidden')) {
+        saveGame(); 
+        isGameRunning = false; 
+        renderStatus();
+        screen.classList.remove('hidden');
+    } else {
+        screen.classList.add('hidden');
+        isGameRunning = true; 
+        lastTime = performance.now(); 
+        requestAnimationFrame(gameLoop);
+    }
+}
+
+// 실시간 능력치 데이터 렌더링
+function renderStatus() {
+    const container = document.getElementById('status-content');
+    container.innerHTML = `
+        <div class="stat-row"><span class="stat-label">❤️ 최대 체력</span> <span class="stat-value">${Math.floor(player.maxHp)}</span></div>
+        <div class="stat-row"><span class="stat-label">⚔️ 공격력</span> <span class="stat-value">${Math.floor(player.stats.atk * 100)}%</span></div>
+        <div class="stat-row"><span class="stat-label">⚡ 공격 속도</span> <span class="stat-value">${Math.floor(player.stats.cooldown * 100)}%</span></div>
+        <div class="stat-row"><span class="stat-label">👟 이동 속도</span> <span class="stat-value">${player.speed.toFixed(1)}</span></div>
+        <div class="stat-row"><span class="stat-label">🛡️ 방어력</span> <span class="stat-value">${(player.stats.def * 100).toFixed(1)}%</span></div>
+        <div class="stat-row"><span class="stat-label">📏 공격 범위</span> <span class="stat-value">${Math.floor(player.stats.area * 100)}%</span></div>
+    `;
+}
  
 function setupInput() { 
     const container = document.getElementById('game-container');
@@ -1217,3 +1242,4 @@ window.saveOptionsAndBack = saveOptionsAndBack;
 window.returnToMenu = returnToMenu;
 window.buyInGameUpgrade = buyInGameUpgrade;
 window.confirmSelection = confirmSelection;
+window.toggleStatus = toggleStatus;
