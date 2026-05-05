@@ -1179,8 +1179,13 @@ function updateHUD() {
         else { hpBar.style.background = 'var(--hp-color)'; hpBar.style.boxShadow = 'none'; }
     }
 
-    if(document.getElementById('kill-count')) document.getElementById('kill-count').innerText = `💀 ${kills}`; 
-    if(document.getElementById('gold-display')) document.getElementById('gold-display').innerText = `🪙 ${runGold}`; 
+// 킬 수 업데이트 (아이콘 제외하고 숫자 부분만 교체)
+    const killNum = document.getElementById('kill-count-num');
+    if(killNum) killNum.innerText = kills; 
+
+    // 금화 업데이트 (아이콘 제외하고 숫자 부분만 교체)
+    const goldNum = document.getElementById('gold-display-num');
+    if(goldNum) goldNum.innerText = runGold;
 }
  
 function gameOver(isReaperDeath = false) { 

@@ -58,7 +58,7 @@ export const MONSTERS_DATA = [
     { id: 'panda', icon: '', hp: 7800, speed: 2.4, dmg: 165, size: Math.floor(80 * 0.7), color: '#fff', name: '팬더', kbResist: 0.35 },
     { id: 'hippo', icon: '', hp: 10800, speed: 2.1, dmg: 195, size: Math.floor(90 * 0.7), color: '#b8e994', name: '하마', kbResist: 0.35 },
     { id: 'crocodile', icon: '', hp: 15600, speed: 2.6, dmg: 240, size: Math.floor(85 * 0.7), color: '#009432', name: '악어', kbResist: 0.35 },
-    { id: 'lion', icon: '', hp: 22800, speed: 3.2, dmg: 300, size: Math.floor(80 * 0.7), color: '#f39c12', name: '사자', kbResist: 0.4 },
-    { id: 'tiger', icon: '', hp: 33600, speed: 3.5, dmg: 375, size: Math.floor(85 * 0.7), color: '#e67e22', name: '호랑이', kbResist: 0.4 },
-    { id: 'elephant', icon: '', hp: 54000, speed: 2.0, dmg: 512, size: Math.floor(110 * 0.7), color: '#718093', name: '코끼리', kbResist: 0.7 }
+   { id: 'lion', icon: '', hp: 22800, speed: 3.2, dmg: 300, size: Math.floor(80 * 0.7), color: '#f39c12', name: '사자', kbResist: 0.25 },
+{ id: 'tiger', icon: '', hp: 33600, speed: 3.5, dmg: 375, size: Math.floor(85 * 0.7), color: '#e67e22', name: '호랑이', kbResist: 0.25 },
+{ id: 'elephant', icon: '', hp: 54000, speed: 2.0, dmg: 512, size: Math.floor(110 * 0.7), color: '#718093', name: '코끼리', kbResist: 0.4 }
 ];

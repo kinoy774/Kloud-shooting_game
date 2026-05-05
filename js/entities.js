@@ -17,7 +17,7 @@ export function spawnEnemy(entities, player, gameTime, gameScale, width, height,
     }
     
     const type = MONSTERS_DATA.find(m => m.id === spawnId) || MONSTERS_DATA[0];
-    const ang = Math.random() * Math.PI * 2, d = Math.max(width, height) / gameScale * 0.8, tb = 1 + (gameTime / 60) * 0.5;
+    const ang = Math.random() * Math.PI * 2, d = Math.max(width, height) / gameScale * 0.8, tb = 1 + (gameTime / 60) * 0.2;
     
     entities.push({ 
         ...type, x: player.x + Math.cos(ang) * d, y: player.y + Math.sin(ang) * d, 
@@ -25,7 +25,7 @@ export function spawnEnemy(entities, player, gameTime, gameScale, width, height,
         dmg: type.dmg * diffAtkMult, speed: type.speed + diffSpeedBonus,
         kbX: 0, kbY: 0, isBoss: false, type: 'enemy', vx: 0, vy: 0, kbResist: type.kbResist || 0,
         state: 'normal', chargeTimer: 0, dashTimer: 0, dashVx: 0, dashVy: 0, cooldown: 0
-    });
+    });0
 
     return { dogCount: newDog, koalaCount: newKoala };
 }
@@ -34,7 +34,7 @@ export function spawnBoss(entities, player, gameTime, gameScale, width, height, 
     const ang = Math.random() * Math.PI * 2, d = Math.max(width, height) / gameScale * 0.7;
     const index = Math.min(SPAWN_TIMELINE.length - 1, Math.floor(gameTime / 80)); 
     const type = MONSTERS_DATA.find(m => m.id === SPAWN_TIMELINE[index]) || MONSTERS_DATA[0];
-    const tb = 1 + (gameTime / 60) * 0.5;
+    const tb = 1 + (gameTime / 60) * 0.2;
     const normalHp = type.hp * tb * diffHpMult;
     const bossHp = normalHp * 20;
 
