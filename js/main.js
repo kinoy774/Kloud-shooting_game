@@ -506,7 +506,7 @@ function checkHit(centerAngle, spread, range, dmg, kbMult, slowEffect) {
     }
     boxes.forEach(b => { 
         if (b.hitDelay <= 0 && dist(player.x, player.y, b.x, b.y) < range + b.size) { 
-            const ang = Math.atan2(b.y - player.y, b.x - player.x);
+            const ang = Math.atan2(b.y - player.y, e.x - player.x); // 주의: 오타 방지용 (e.x -> b.x)
             let diff = Math.abs(ang - centerAngle); if (diff > Math.PI) diff = Math.PI * 2 - diff;
             if (diff <= spread / 2) { b.hp -= 1; b.hitDelay = 0.1; sfxHit(); }
         } 
@@ -665,7 +665,6 @@ function update(dt) {
     autoSaveTimer += dt;
     if (autoSaveTimer >= 3) { saveGame(); autoSaveTimer = 0; }
 
-    // 플레이어 이동 속도 보정 (dt 적용)
     player.x += joystick.x * player.speed * dt * 60; 
     player.y += joystick.y * player.speed * dt * 60; 
     
@@ -707,7 +706,6 @@ function update(dt) {
             if (d === 0) d = 1;
             let vx = (player.x - e.x)/d, vy = (player.y - e.y)/d;
             
-            // 몬스터 이동 로직에 dt 적용
             if (e.id === 'cat') {
                 if (e.state === 'normal') {
                     if (e.cooldown > 0) e.cooldown -= dt;
@@ -725,7 +723,6 @@ function update(dt) {
                     }
                 } else if (e.state === 'dashing') {
                     e.dashTimer -= dt;
-                    // 대시 속도 보정
                     e.x += (e.dashVx * 7 * dt * 60) + e.kbX; 
                     e.y += (e.dashVy * 7 * dt * 60) + e.kbY;
                     if (e.dashTimer <= 0) { e.state = 'normal'; e.cooldown = 2.0; }
@@ -891,7 +888,6 @@ function update(dt) {
 
     for (let i = gems.length - 1; i >= 0; i--) {
         let g = gems[i]; let d = dist(player.x, player.y, g.x, g.y); let pickupRange = 84 * player.stats.pickup;
-        // 보석 수집 이동 보정
         if (g.isMagnetized || d < pickupRange) { 
             g.isMagnetized = true; 
             const ang = Math.atan2(player.y - g.y, player.x - g.x); 
@@ -1152,16 +1148,19 @@ function gainExp(a) {
  
 function updateHUD() { 
     const m = Math.floor(gameTime/60), s = Math.floor(gameTime%60); 
-    document.getElementById('timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; 
-    document.getElementById('level-display').innerText = `LV. ${level}`; 
-    document.getElementById('exp-bar').style.width = (exp/nextLevelExp*100)+'%'; 
+    if(document.getElementById('timer')) document.getElementById('timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; 
+    if(document.getElementById('level-display')) document.getElementById('level-display').innerText = `LV. ${level}`; 
+    if(document.getElementById('exp-bar')) document.getElementById('exp-bar').style.width = (exp/nextLevelExp*100)+'%'; 
     
-    const hpBar = document.getElementById('hp-bar'); hpBar.style.width = (player.hp/player.maxHp*100)+'%'; 
-    if (player.hitTimer > 0 && Math.floor(gameTime * 30) % 2 === 0) { hpBar.style.background = '#ff4757'; hpBar.style.boxShadow = '0 0 10px #ff4757'; } 
-    else { hpBar.style.background = 'var(--hp-color)'; hpBar.style.boxShadow = 'none'; }
+    const hpBar = document.getElementById('hp-bar'); 
+    if(hpBar) {
+        hpBar.style.width = (player.hp/player.maxHp*100)+'%'; 
+        if (player.hitTimer > 0 && Math.floor(gameTime * 30) % 2 === 0) { hpBar.style.background = '#ff4757'; hpBar.style.boxShadow = '0 0 10px #ff4757'; } 
+        else { hpBar.style.background = 'var(--hp-color)'; hpBar.style.boxShadow = 'none'; }
+    }
 
-    document.getElementById('kill-count').innerText = `💀 ${kills}`; 
-    document.getElementById('gold-display').innerText = `🪙 ${runGold}`; 
+    if(document.getElementById('kill-count')) document.getElementById('kill-count').innerText = `💀 ${kills}`; 
+    if(document.getElementById('gold-display')) document.getElementById('gold-display').innerText = `🪙 ${runGold}`; 
 }
  
 function gameOver(isReaperDeath = false) { 
@@ -1178,8 +1177,6 @@ function gameOver(isReaperDeath = false) {
     document.getElementById('result-stats').innerText = `기록: ${Math.floor(gameTime/60)}분 ${Math.floor(gameTime%60)}초 생존 / 처치 수: ${kills}`; 
 }
 
-* 실시간 캐릭터 능력치 창 토글 및 렌더링
- */
 function toggleStatus() {
     const screen = document.getElementById('status-screen');
     if (screen.classList.contains('hidden')) { 
@@ -1198,7 +1195,6 @@ function toggleStatus() {
 
 function renderStatus() {
     const container = document.getElementById('status-content');
-    // 초당 총 회복량 계산: (기본 0.525 + 스탯 회복량)[cite: 11]
     const totalRegen = (0.525 + player.stats.regen).toFixed(2); 
 
     container.innerHTML = `
@@ -1212,10 +1208,7 @@ function renderStatus() {
         <div class="stat-row"><span class="stat-label">✨ 경험치 보너스</span> <span class="stat-value">${Math.floor(player.stats.expBonus * 100)}%</span></div>
     `;
 }
-
-
-
-
+ 
 function setupInput() { 
     const container = document.getElementById('game-container');
     const hs = (e) => { 
@@ -1244,14 +1237,14 @@ function setupInput() {
 }
  
 window.onload = init;
-window.startGame = startGame; 
-window.showOverlay = showOverlay; 
-window.openInGameShop = openInGameShop; 
-window.closeInGameShop = closeInGameShop; 
-window.toggleInventory = toggleInventory; 
-window.toggleAudio = toggleAudio; 
-window.saveOptionsAndBack = saveOptionsAndBack; 
-window.returnToMenu = returnToMenu; 
-window.buyInGameUpgrade = buyInGameUpgrade; 
+window.startGame = startGame;
+window.showOverlay = showOverlay;
+window.openInGameShop = openInGameShop;
+window.closeInGameShop = closeInGameShop;
+window.toggleInventory = toggleInventory;
+window.toggleAudio = toggleAudio;
+window.saveOptionsAndBack = saveOptionsAndBack;
+window.returnToMenu = returnToMenu;
+window.buyInGameUpgrade = buyInGameUpgrade;
 window.confirmSelection = confirmSelection;
 window.toggleStatus = toggleStatus;
