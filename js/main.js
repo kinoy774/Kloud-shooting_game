@@ -317,7 +317,7 @@ function recalculateStats() {
         cooldown: 1.0 + (runUpgrades.aspd * 0.016),
         area: 1.0,
         expBonus: 1.0 + (runUpgrades.exp * 0.03),
-        def: runUpgrades.def * 0.02,
+        def: runUpgrades.def * 0.01,
         regen: runUpgrades.regen * 0.63,
         pickup: 1.0
     };
@@ -336,6 +336,26 @@ function recalculateStats() {
             else if (a.id === 'regen_up') player.stats.regen += d.growth * a.level;
         }
     });
+
+// 진화 무기(조합 무기)를 검사하여 짝꿍 보조무기(만렙 4 기준) 효과를 유지시킵니다.
+player.evolvedWeapons.forEach(ew => {
+    const evData = EVOLVE_DATA.find(e => e.id === ew.id);
+    const wData = WEAPONS_DATA.find(w => w.id === evData.origin);
+    const aData = ACC_DATA.find(a => a.pair === wData.name);
+    
+    if (aData) {
+        if (aData.id === 'hp_up') player.maxHp += aData.growth * 4;
+        else if (aData.id === 'speed_up') player.speed += aData.growth * 4;
+        else if (aData.id === 'atk_up') player.stats.atk += aData.growth * 4;
+        else if (aData.id === 'cooldown_down') player.stats.cooldown += aData.growth * 4;
+        else if (aData.id === 'area_up') player.stats.area += aData.growth * 4;
+        else if (aData.id === 'exp_up') player.stats.expBonus += aData.growth * 4;
+        else if (aData.id === 'pickup_up') player.stats.pickup += aData.growth * 4;
+        else if (aData.id === 'def_up') player.stats.def += aData.growth * 4;
+        else if (aData.id === 'regen_up') player.stats.regen += aData.growth * 4;
+    }
+});
+ 
 
     player.stats.def = player.stats.def * 0.9;
     player.stats.def = Math.min(player.stats.def, 0.5);
