@@ -310,7 +310,7 @@ function recalculateStats() {
     let oldMaxHp = player.maxHp;
 
     player.maxHp = 180 + (runUpgrades.hp * 15);
-    player.speed = 2.5 * (1 + runUpgrades.speed * 0.015);
+    player.speed = 2.5 * (1 + runUpgrades.speed * 0.05);
 
     player.stats = {
         atk: 1.0 + (runUpgrades.atk * 0.02) + (level * 0.05),
