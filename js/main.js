@@ -310,7 +310,7 @@ function recalculateStats() {
     let oldMaxHp = player.maxHp;
 
     player.maxHp = 180 + (runUpgrades.hp * 15);
-    player.speed = 2.5 * (1 + runUpgrades.speed * 0.015);
+    player.speed = 2.7 * (1 + runUpgrades.speed * 0.015);
 
     player.stats = {
         atk: 1.0 + (runUpgrades.atk * 0.02) + (level * 0.05),
@@ -420,7 +420,7 @@ function startNewGame(diff) {
     lastWaveMin = 0; lastBossMin = 0; isTimeStopped = false; timeStopTimer = 0;
     
     player = {
-        x: 0, y: 0, hp: 180, maxHp: 180, speed: 2.5, size: 40,
+        x: 0, y: 0, hp: 180, maxHp: 180, speed: 2.7, size: 50,
         weapons: [{id:'sword', level:1, timer:0}], accessories: [], evolvedWeapons: [],
         stats: { atk: 1.0, cooldown: 1.0, area: 1.0, expBonus: 1.0, def: 0.0, regen: 0.0, pickup: 1.0 },
         hitTimer: 0, lookX: 6, lookY: 0, isMoving: false
