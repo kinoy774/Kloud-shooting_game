@@ -14,48 +14,54 @@
     <canvas id="gameCanvas"></canvas>
     
     <div id="warning-banner">
-        <h2 id="warning-text" class="cartoon-text" style="margin:0; font-size: clamp(1.5rem, 6vw, 2.5rem); color: #ff4757; word-break: keep-all; padding: 0 15px; text-align: center;">경고 문구</h2>
-        <div id="warning-sub" class="cartoon-text" style="font-size: clamp(0.9rem, 3.5vw, 1.2rem); margin-top: 5px; padding: 0 15px; word-break: keep-all; text-align: center;">준비하세요!</div>
+        <h2 id="warning-text" class="cartoon-text">경고 문구</h2>
+        <div id="warning-sub" class="cartoon-text">준비하세요!</div>
     </div>
 
-    <div id="toast-msg" class="cartoon-text" style="position:absolute; top:130px; left:50%; transform:translateX(-50%); opacity:0; color:#fff; background:#000; border: 4px solid #fff; padding:10px 30px; border-radius:15px; z-index:90; font-size:1.2rem; transition:0.2s;"></div>
+    <div id="toast-msg" class="cartoon-text"></div>
 
     <div id="hud">
         <div id="exp-container"><div id="exp-bar"></div></div>
         
-        <div id="stats-row" style="position: absolute; top: 22px; width: 100%; display: flex; justify-content: space-between; padding: 0 15px; box-sizing: border-box; align-items: flex-start; z-index: 41; pointer-events: none;">
-            <div style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px;">
-                <div id="level-display" class="hud-box" style="margin: 0;">LV. 1</div>
-                <div style="display: flex; align-items: center; gap: 4px; margin-top: 2px;">
-                    <span class="heart-icon" style="font-size: 1rem; text-shadow: 2px 2px 0 #000; line-height: 1;">❤️</span>
-                    <div id="hp-container" style="margin: 0; width: 85px; height: 12px; background: #fff; border: 3px solid #000; border-radius: 6px; overflow: hidden; box-shadow: 2px 2px 0 #000;">
-                        <div id="hp-bar" style="width: 100%; height: 100%; background: var(--hp-color); transition: 0.2s;"></div>
-                    </div>
+        <div id="stats-row">
+            <!-- 좌측 상단: 레벨, 상태창 버튼, 체력바를 한 그룹으로 묶음 -->
+            <div id="player-status-group">
+                <div style="display: flex; gap: 6px; align-items: stretch;">
+                    <div id="level-display" class="hud-box">LV. 1</div>
+                    <button id="top-status-btn" onclick="toggleStatus()">📊 능력치</button>
+                </div>
+                <div id="hp-container">
+                    <div id="hp-bar"></div>
                 </div>
             </div>
-            <div class="cartoon-text" id="timer" style="line-height: 1; margin: 0; padding-top: 2px;">00:00</div>
-            <div style="display: flex; flex-direction: column; gap: 4px; align-items: flex-end;">
-                <div id="kill-count" class="hud-box" style="margin: 0;">💀 0</div>
-                <div id="gold-display" class="hud-box" style="margin: 0; background: #fffde7; border-color: #f1c40f;">🪙 0</div>
+
+            <!-- 중앙: 타이머 -->
+            <div class="cartoon-text" id="timer">00:00</div>
+
+            <!-- 우측 상단: 킬 수, 골드 -->
+            <div id="game-info-group">
+                <div id="kill-count" class="hud-box">💀 0</div>
+                <div id="gold-display" class="hud-box">🪙 0</div>
             </div>
         </div>
     </div>
 
-    <div id="inventory-wrapper" style="display: none;">
+    <!-- 인벤토리 위치: 좌측 하단 구석으로 이동 -->
+    <div id="inventory-wrapper">
         <div id="inventory-container">
             <div class="inv-row" id="evolved-inv-row"></div>
             <div class="inv-row" id="weapon-inv-row"></div>
             <div class="inv-row" id="acc-inv-row"></div>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <button onclick="openInGameShop()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #ffeaa7; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans';">🛒 상점</button>
-            <button onclick="toggleStatus()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #74b9ff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #fff; font-weight: bold; font-family: 'Black Han Sans';">📊 능력치</button>
-            <button id="inv-toggle-btn" onclick="toggleInventory()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #fff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #000; font-family: 'Black Han Sans';">▼ 가방 닫기</button>
+        <div style="display: flex; gap: 8px; align-items: flex-end;">
+            <button id="square-shop-btn" onclick="openInGameShop()">🛒</button>
+            <button id="inv-toggle-btn" onclick="toggleInventory()">▼ 가방 닫기</button>
         </div>
     </div>
 
     <div id="joystick-area"><div id="joystick-stick"></div></div>
 
+    <!-- 오버레이 화면들 -->
     <div id="loading-screen" class="overlay">
         <h2 class="cartoon-text" style="font-size: 3.5rem; color: var(--accent);">살아남기 준비중!</h2>
         <div style="width: 250px; height: 25px; background: #fff; border: 4px solid #000; border-radius: 15px; margin-top: 20px; overflow: hidden; box-shadow: 4px 4px 0 #000;">
@@ -67,36 +73,10 @@
         <canvas id="menu-canvas"></canvas>
         <div style="z-index: 20; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-top: -50px;">
             <h1 class="cartoon-text" style="font-size: 4.5rem; color: var(--accent); margin-bottom: 40px; line-height: 1.1;">무한슈팅<br>살아남기!</h1>
-            
             <button id="continue-btn" onclick="startGame(true)" style="display:none; background:#ff9f43; margin-bottom: 15px;">이어하기</button>
             <button onclick="showOverlay('difficulty-screen')">새 게임 시작</button>
             <button onclick="showOverlay('how-to-play')">게임 방법</button>
             <button onclick="showOverlay('options-screen')">설정</button>
-        </div>
-    </div>
-
-    <div id="difficulty-screen" class="overlay hidden">
-        <div class="cartoon-panel modal-body">
-            <h2 class="cartoon-text" style="font-size: 2.5rem; color: var(--accent); margin-top:0;">난이도 선택</h2>
-            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
-                <button onclick="startGame(false, 'EASY')" style="width:100%; margin:0; background:#2ed573;">EASY<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold;">(기본 난이도 모드)</span></button>
-                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold;">(적 체력/공격력 20% 상승, 개체수 10% 증가)</span></button>
-                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold; color:#fff;">(적 체력/공격 50% 상승, 속도 증가, 개체 30% 증가)</span></button>
-            </div>
-            <button onclick="showOverlay('main-menu')" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box; background:#ccc;">뒤로 가기</button>
-        </div>
-    </div>
-
-    <div id="in-game-shop-screen" class="overlay hidden" style="z-index: 200;">
-        <div class="cartoon-panel modal-body" style="max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 15px;">
-            <h2 class="cartoon-text" style="font-size: 2.2rem; color: #00d2ff; margin-top:0; margin-bottom: 10px;">인게임 상점</h2>
-            <div class="cartoon-text" style="font-size: 0.9rem; margin-bottom: 10px; color: #ccc;">(이번 판에서만 적용되는 임시 능력치입니다)</div>
-            <div class="cartoon-text" id="shop-gold-display" style="font-size: 1.5rem; color: #f1c40f; margin-bottom: 15px;">보유 금화: 🪙 0</div>
-            
-            <div id="shop-list-container" style="flex-grow: 1; overflow-y: auto; padding-right: 5px; font-family: 'Pretendard', sans-serif; font-weight: bold;">
-            </div>
-            
-            <button onclick="closeInGameShop()" style="width:100%; margin: 15px 0 0 0; box-sizing: border-box; background: #ff4757; color: #fff;">닫기 (게임 재개)</button>
         </div>
     </div>
 
@@ -109,18 +89,36 @@
         </div>
     </div>
 
+    <div id="difficulty-screen" class="overlay hidden">
+        <div class="cartoon-panel modal-body">
+            <h2 class="cartoon-text" style="font-size: 2.5rem; color: var(--accent); margin-top:0;">난이도 선택</h2>
+            <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                <button onclick="startGame(false, 'EASY')" style="width:100%; margin:0; background:#2ed573;">EASY</button>
+                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL</button>
+                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD</button>
+            </div>
+            <button onclick="showOverlay('main-menu')" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box; background:#ccc;">뒤로 가기</button>
+        </div>
+    </div>
+
+    <div id="in-game-shop-screen" class="overlay hidden" style="z-index: 200;">
+        <div class="cartoon-panel modal-body" style="max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; padding: 15px;">
+            <h2 class="cartoon-text" style="font-size: 2.2rem; color: #00d2ff; margin-top:0; margin-bottom: 10px;">인게임 상점</h2>
+            <div class="cartoon-text" id="shop-gold-display" style="font-size: 1.5rem; color: #f1c40f; margin-bottom: 15px;">보유 금화: 🪙 0</div>
+            <div id="shop-list-container" style="flex-grow: 1; overflow-y: auto;"></div>
+            <button onclick="closeInGameShop()" style="width:100%; margin: 15px 0 0 0; box-sizing: border-box; background: #ff4757; color: #fff;">닫기</button>
+        </div>
+    </div>
+
     <div id="how-to-play" class="overlay hidden">
         <div class="cartoon-panel modal-body">
             <h2 class="cartoon-text" style="font-size: 2.5rem; color: var(--accent); margin-top:0;">플레이 가이드</h2>
             <div style="text-align: left; font-family: 'Pretendard', sans-serif; font-weight: bold; font-size: 1rem; color: #fff; line-height: 1.8;">
-                <p>🎮 이동: 화면 원하는 곳을 터치 후 드래그하세요.</p>
-                <p>⚔️ 공격: 캐릭터가 바라보는 방향으로 자동 공격합니다.</p>
-                <p>🛒 상점: 몬스터를 잡아 모은 금화로 매 판마다 빌드를 짤 수 있습니다.</p>
-                <p>🔥 진화: 무기 LV.5 + 보조 LV.4 달성 시 궁극 진화!</p>
-                <p>💾 자동저장: 3초마다 게임이 안전하게 저장됩니다.</p>
-                <p>🏆 승리: 20분간 살아남으면 전설이 됩니다.</p>
+                <p>🎮 이동: 화면을 드래그하세요.</p>
+                <p>⚔️ 공격: 자동으로 가장 가까운 적을 공격합니다.</p>
+                <p>🔥 진화: 무기 LV.5 + 보조 LV.4 달성 시 진화 가능!</p>
             </div>
-            <button onclick="showOverlay('main-menu')" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box;">알겠습니다!</button>
+            <button onclick="showOverlay('main-menu')" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box;">확인</button>
         </div>
     </div>
 
@@ -128,14 +126,14 @@
         <div class="cartoon-panel modal-body">
             <h2 class="cartoon-text" style="font-size: 2.5rem; color: var(--accent); margin-top:0;">게임 설정</h2>
             <div class="option-group">
-                <span class="cartoon-text" style="font-size: 1.2rem;">배경음악 (BGM)</span>
+                <span class="cartoon-text" style="font-size: 1.2rem;">BGM</span>
                 <div id="bgm-toggle" class="toggle-btn on" onclick="toggleAudio('bgm')">ON</div>
             </div>
             <div class="option-group">
-                <span class="cartoon-text" style="font-size: 1.2rem;">효과음 (SFX)</span>
+                <span class="cartoon-text" style="font-size: 1.2rem;">SFX</span>
                 <div id="sfx-toggle" class="toggle-btn on" onclick="toggleAudio('sfx')">ON</div>
             </div>
-            <button onclick="saveOptionsAndBack()" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box;">저장 및 닫기</button>
+            <button onclick="saveOptionsAndBack()" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box;">저장</button>
         </div>
     </div>
 
@@ -143,20 +141,19 @@
         <div class="cartoon-panel modal-body" style="max-height: 90vh; overflow-y: auto; overflow-x: hidden;">
             <h2 id="level-up-title" class="cartoon-text">LEVEL UP!</h2>
             <div id="choice-container" class="card-container"></div>
-            
             <div id="item-detail-panel" class="hidden">
                 <div id="detail-stats-box" class="stat-grid"></div>
                 <div id="detail-perk" class="perk-box hidden"></div>
                 <div id="detail-combo"></div>
             </div>
-            <button id="confirm-select-btn" onclick="confirmSelection()" style="width: 100%; margin: 15px 0 0 0; background: #2ed573; box-sizing: border-box;" disabled>선택 완료</button>
+            <button id="confirm-select-btn" onclick="confirmSelection()" style="width: 100%; margin: 15px 0 0 0; background: #2ed573;" disabled>선택 완료</button>
         </div>
     </div>
 
     <div id="game-over-screen" class="overlay hidden">
         <h2 id="end-title" class="cartoon-text" style="font-size: 4.5rem; color: var(--hp-color); margin-bottom: 10px;">전투 불능</h2>
         <p id="result-stats" class="cartoon-text" style="font-size: 1.5rem; margin-bottom: 40px;"></p>
-        <button onclick="returnToMenu()" style="box-sizing: border-box; width: 100%; margin: 0;">메인 메뉴로</button>
+        <button onclick="returnToMenu()" style="width: 100%; margin: 0;">메인 메뉴로</button>
     </div>
 </div>
 
