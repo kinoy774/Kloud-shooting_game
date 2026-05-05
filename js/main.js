@@ -836,8 +836,8 @@ function update(dt) {
             for (let j = entities.length - 1; j >= 0; j--) {
                 let e = entities[j]; if(e.type !== 'enemy') continue;
                 let d = dist(p.x, p.y, e.x, e.y);
-                if (d < 150 && !e.isBoss && e.id !== 'reaper') { let a = Math.atan2(p.y - e.y, p.x - e.x); if (d > 10) { e.kbX = Math.cos(a) * 2.5; e.kbY = Math.sin(a) * 2.5; } else { e.kbX = 0; e.kbY = 0; } }
-                if (d < 60) { e.hp -= (e.id === 'reaper' ? 0 : p.dmg * dt * 10); if(Math.random() > 0.8) fx.push({ type: 'spark', x: e.x, y: e.y, life: 0.1, color: '#9b59b6' }); }
+                if (d < 30 && !e.isBoss && e.id !== 'reaper') { let a = Math.atan2(p.y - e.y, p.x - e.x); if (d > 10) { e.kbX = Math.cos(a) * 2.5; e.kbY = Math.sin(a) * 2.5; } else { e.kbX = 0; e.kbY = 0; } }
+                if (d < 20) { e.hp -= (e.id === 'reaper' ? 0 : p.dmg * dt * 10); if(Math.random() > 0.8) fx.push({ type: 'spark', x: e.x, y: e.y, life: 0.1, color: '#9b59b6' }); }
             }
             boxes.forEach(b => { if (b.hitDelay <= 0 && dist(p.x, p.y, b.x, b.y) < 60) { b.hp -= 1; b.hitDelay = 0.5; sfxHit(); } });
         } else if (p.type === 'buzzsaw') {
