@@ -49,6 +49,7 @@
         </div>
         <div style="display: flex; gap: 8px;">
             <button onclick="openInGameShop()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #ffeaa7; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans';">🛒 상점</button>
+            <button onclick="toggleStatus()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #74b9ff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #fff; font-weight: bold; font-family: 'Black Han Sans';">📊 능력치</button>
             <button id="inv-toggle-btn" onclick="toggleInventory()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #fff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #000; font-family: 'Black Han Sans';">▼ 가방 닫기</button>
         </div>
     </div>
@@ -96,6 +97,15 @@
             </div>
             
             <button onclick="closeInGameShop()" style="width:100%; margin: 15px 0 0 0; box-sizing: border-box; background: #ff4757; color: #fff;">닫기 (게임 재개)</button>
+        </div>
+    </div>
+
+    <div id="status-screen" class="overlay hidden" style="z-index: 250;">
+        <div class="cartoon-panel modal-body" style="background: #f1f2f6; line-height: 1.25;">
+            <h2 class="cartoon-text" style="font-size: 2.2rem; color: #2c3e50; margin-top:0; margin-bottom: 10px;">캐릭터 능력치</h2>
+            <div id="status-content" class="stat-grid" style="margin-top: 15px; grid-template-columns: 1fr;">
+            </div>
+            <button onclick="toggleStatus()" style="width: 100%; margin-top: 15px; background: #ff4757; color: #fff;">닫기</button>
         </div>
     </div>
 
