@@ -337,7 +337,7 @@ function recalculateStats() {
         }
     });
 
-    player.stats.def = player.stats.def * 0.7;
+    player.stats.def = player.stats.def * 0.9;
     player.stats.def = Math.min(player.stats.def, 0.5);
     player.stats.regen = player.stats.regen * 0.9;
 
