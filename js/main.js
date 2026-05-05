@@ -15,8 +15,8 @@ let diffHpMult = 1.0, diffAtkMult = 1.0, diffSpeedBonus = 0, diffSpawnMult = 1.0
 function setDifficultyParams(diff) {
     currentDifficulty = diff;
     if(diff === 'EASY') { diffHpMult = 1.0; diffAtkMult = 1.0; diffSpeedBonus = 0; diffSpawnMult = 1.0; }
-    if(diff === 'NORMAL') { diffHpMult = 1.2; diffAtkMult = 1.2; diffSpeedBonus = 0; diffSpawnMult = 1.1; }
-    if(diff === 'HARD') { diffHpMult = 1.5; diffAtkMult = 1.5; diffSpeedBonus = 0.2; diffSpawnMult = 1.3; }
+    if(diff === 'NORMAL') { diffHpMult = 1.5; diffAtkMult = 1.5; diffSpeedBonus = 0.2; diffSpawnMult = 1.3; }
+    if(diff === 'HARD') { diffHpMult = 1.8; diffAtkMult = 1.8; diffSpeedBonus = 0.4; diffSpawnMult = 1.6; }
 }
 
 function getUpgradeCost(key, level) {
