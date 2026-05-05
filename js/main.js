@@ -665,7 +665,10 @@ function update(dt) {
     autoSaveTimer += dt;
     if (autoSaveTimer >= 3) { saveGame(); autoSaveTimer = 0; }
 
-    player.x += joystick.x * player.speed; player.y += joystick.y * player.speed; 
+    // 플레이어 이동 속도 보정 (dt 적용)
+    player.x += joystick.x * player.speed * dt * 60; 
+    player.y += joystick.y * player.speed * dt * 60; 
+    
     player.hp = Math.min(player.maxHp, player.hp + (0.525 + player.stats.regen) * dt);
     player.lookX = joystick.lastX; player.lookY = joystick.lastY; player.isMoving = (Math.abs(joystick.x) > 0.05 || Math.abs(joystick.y) > 0.05);
 
@@ -704,13 +707,16 @@ function update(dt) {
             if (d === 0) d = 1;
             let vx = (player.x - e.x)/d, vy = (player.y - e.y)/d;
             
+            // 몬스터 이동 로직에 dt 적용
             if (e.id === 'cat') {
                 if (e.state === 'normal') {
                     if (e.cooldown > 0) e.cooldown -= dt;
                     if (d <= 300 && e.cooldown <= 0) {
                         e.state = 'charging'; e.chargeTimer = 2.0; e.vx = 0; e.vy = 0;
                     } else {
-                        e.vx = vx; e.vy = vy; e.x += (vx * currentSpeed) + e.kbX; e.y += (vy * currentSpeed) + e.kbY;
+                        e.vx = vx; e.vy = vy; 
+                        e.x += (vx * currentSpeed * dt * 60) + e.kbX; 
+                        e.y += (vy * currentSpeed * dt * 60) + e.kbY;
                     }
                 } else if (e.state === 'charging') {
                     e.chargeTimer -= dt;
@@ -719,7 +725,9 @@ function update(dt) {
                     }
                 } else if (e.state === 'dashing') {
                     e.dashTimer -= dt;
-                    e.x += (e.dashVx * 7) + e.kbX; e.y += (e.dashVy * 7) + e.kbY;
+                    // 대시 속도 보정
+                    e.x += (e.dashVx * 7 * dt * 60) + e.kbX; 
+                    e.y += (e.dashVy * 7 * dt * 60) + e.kbY;
                     if (e.dashTimer <= 0) { e.state = 'normal'; e.cooldown = 2.0; }
                 }
             } else if (e.id === 'panda') {
@@ -729,7 +737,9 @@ function update(dt) {
                     if (d <= bambooRange && e.cooldown <= 0) {
                         e.state = 'charging'; e.chargeTimer = 2.0; e.vx = 0; e.vy = 0;
                     } else {
-                        e.vx = vx; e.vy = vy; e.x += (vx * currentSpeed) + e.kbX; e.y += (vy * currentSpeed) + e.kbY;
+                        e.vx = vx; e.vy = vy; 
+                        e.x += (vx * currentSpeed * dt * 60) + e.kbX; 
+                        e.y += (vy * currentSpeed * dt * 60) + e.kbY;
                     }
                 } else if (e.state === 'charging') {
                     e.chargeTimer -= dt;
@@ -751,8 +761,8 @@ function update(dt) {
                 }
             } else {
                 e.vx = vx; e.vy = vy; 
-                e.x += (vx * currentSpeed) + e.kbX; 
-                e.y += (vy * currentSpeed) + e.kbY;
+                e.x += (vx * currentSpeed * dt * 60) + e.kbX; 
+                e.y += (vy * currentSpeed * dt * 60) + e.kbY;
             }
 
             if(d < e.size/2 + 20 && player.hitTimer <= 0) { 
@@ -881,7 +891,13 @@ function update(dt) {
 
     for (let i = gems.length - 1; i >= 0; i--) {
         let g = gems[i]; let d = dist(player.x, player.y, g.x, g.y); let pickupRange = 84 * player.stats.pickup;
-        if (g.isMagnetized || d < pickupRange) { g.isMagnetized = true; const ang = Math.atan2(player.y - g.y, player.x - g.x); g.x += Math.cos(ang) * 22; g.y += Math.sin(ang) * 22; }
+        // 보석 수집 이동 보정
+        if (g.isMagnetized || d < pickupRange) { 
+            g.isMagnetized = true; 
+            const ang = Math.atan2(player.y - g.y, player.x - g.x); 
+            g.x += Math.cos(ang) * 22 * dt * 60; 
+            g.y += Math.sin(ang) * 22 * dt * 60; 
+        }
         if(d < 50) { gainExp(g.exp); gems.splice(i, 1); sfxCollect(); }
     }
 
