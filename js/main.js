@@ -764,8 +764,8 @@ function update(dt) {
 
             if(d < e.size/2 + 20 && player.hitTimer <= 0) { 
                 let finalDmg = Math.max(1, e.dmg * (1 - player.stats.def)); player.hp -= finalDmg; 
-                player.hitTimer = 0.25; 
-                shake = 10; 
+                player.hitTimer = 0.75; 
+                shake = 15; 
                 if(player.hp <= 0) gameOver(e.id === 'reaper'); 
             }
         }
