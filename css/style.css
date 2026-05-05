@@ -154,3 +154,12 @@ button:disabled { opacity: 0.5; background: #888; cursor: not-allowed; }
     #hp-container { width: 70px !important; height: 10px !important; }
     .heart-icon { font-size: 0.8rem !important; }
 }
+
+/* 상태창 전용 스타일 추가[cite: 14] */
+#status-content .stat-row {
+    font-size: 1.1rem; padding: 8px 0; border-bottom: 1px dashed #ccc;
+    display: flex; justify-content: space-between; align-items: center;
+}
+#status-content .stat-row:last-child { border-bottom: none; }
+#status-content .stat-label { color: #2c3e50; font-family: 'Black Han Sans'; }
+#status-content .stat-value { color: #d63031; font-family: 'Black Han Sans'; font-size: 1.2rem; }
