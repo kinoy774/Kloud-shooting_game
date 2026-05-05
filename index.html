@@ -79,9 +79,14 @@
         <div class="cartoon-panel modal-body">
             <h2 class="cartoon-text" style="font-size: 2.5rem; color: var(--accent); margin-top:0;">난이도 선택</h2>
             <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+                <!-- EASY 난이도 -->
                 <button onclick="startGame(false, 'EASY')" style="width:100%; margin:0; background:#2ed573;">EASY<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold;">(기본 난이도 모드)</span></button>
-                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold;">(적 체력/공격력 20% 상승, 개체수 10% 증가)</span></button>
-                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold; color:#fff;">(적 체력/공격 50% 상승, 속도 증가, 개체 30% 증가)</span></button>
+                
+                <!-- NORMAL 난이도: 1.5배(50% 상승), 개체수 1.3배(30% 증가) 반영 -->
+                <button onclick="startGame(false, 'NORMAL')" style="width:100%; margin:0; background:#ffa502;">NORMAL<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold;">(적 체력/공격력 50% 상승, 속도 증가, 개체수 30% 증가)</span></button>
+                
+                <!-- HARD 난이도: 1.8배(80% 상승), 개체수 1.6배(60% 증가) 반영 -->
+                <button onclick="startGame(false, 'HARD')" style="width:100%; margin:0; background:#ff4757; color:#fff;">HARD<br><span style="font-size:0.9rem; font-family:'Pretendard', sans-serif; font-weight:bold; color:#fff;">(적 체력/공격 80% 상승, 속도 대폭 증가, 개체 60% 증가)</span></button>
             </div>
             <button onclick="showOverlay('main-menu')" style="width:100%; margin: 20px 0 0 0; box-sizing: border-box; background:#ccc;">뒤로 가기</button>
         </div>
