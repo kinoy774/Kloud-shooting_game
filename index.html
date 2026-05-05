@@ -41,18 +41,28 @@
         </div>
     </div>
 
-    <div id="inventory-wrapper" style="display: none;">
-        <div id="inventory-container">
-            <div class="inv-row" id="evolved-inv-row"></div>
-            <div class="inv-row" id="weapon-inv-row"></div>
-            <div class="inv-row" id="acc-inv-row"></div>
+   <!-- 기존 inventory-wrapper 부분을 통째로 교체 -->
+<div id="inventory-wrapper" style="display: none; position: absolute; bottom: max(15px, env(safe-area-inset-bottom)); left: 15px; right: 15px; flex-direction: row; justify-content: space-between; align-items: flex-end; z-index: 50; pointer-events: none;">
+    
+    <!-- 좌측 하단: 무기 인벤토리 묶음 -->
+    <div style="display: flex; flex-direction: column; align-items: flex-start;">
+        <!-- 인벤토리 창은 터치 무시 (pointer-events: none) -->
+        <div id="inventory-container" style="transform-origin: bottom left; pointer-events: none;">
+            <div class="inv-row" id="evolved-inv-row" style="justify-content: flex-start;"></div>
+            <div class="inv-row" id="weapon-inv-row" style="justify-content: flex-start;"></div>
+            <div class="inv-row" id="acc-inv-row" style="justify-content: flex-start;"></div>
         </div>
-        <div style="display: flex; gap: 8px;">
-            <button onclick="openInGameShop()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #ffeaa7; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans';">🛒 상점</button>
-            <button onclick="toggleStatus()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #74b9ff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #fff; font-weight: bold; font-family: 'Black Han Sans';">📊 능력치</button>
-            <button id="inv-toggle-btn" onclick="toggleInventory()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #fff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #000; font-family: 'Black Han Sans';">▼ 가방 닫기</button>
-        </div>
+        <!-- 가방 닫기 버튼만 터치 가능하게 (pointer-events: auto 적용) -->
+        <button id="inv-toggle-btn" onclick="toggleInventory()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #fff; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #000; font-family: 'Black Han Sans'; pointer-events: auto;">▼ 가방 닫기</button>
     </div>
+
+    <!-- 우측 하단: 상점 버튼 묶음 -->
+    <div>
+        <!-- 상점 버튼만 터치 가능하게 (pointer-events: auto 적용) -->
+        <button onclick="openInGameShop()" style="width: auto; padding: 4px 12px; font-size: 0.9rem; margin: 0; background: #ffeaa7; border: 2px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; color: #d63031; font-weight: bold; font-family: 'Black Han Sans'; pointer-events: auto;">🛒 상점</button>
+    </div>
+    
+</div>
 
     <div id="joystick-area"><div id="joystick-stick"></div></div>
 
