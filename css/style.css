@@ -155,7 +155,7 @@ button:disabled { opacity: 0.5; background: #888; cursor: not-allowed; }
     .heart-icon { font-size: 0.8rem !important; }
 }
 
-/* 상태창 전용 스타일 추가[cite: 14] */
+/* 상태창 전용 스타일 추가 */
 #status-content .stat-row {
     font-size: 1.1rem; padding: 8px 0; border-bottom: 1px dashed #ccc;
     display: flex; justify-content: space-between; align-items: center;
