@@ -900,24 +900,10 @@ function gainExp(a) {
  
 function updateHUD() { 
     const m = Math.floor(gameTime/60), s = Math.floor(gameTime%60); 
-    document.getElementById('timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; 
-    document.getElementById('level-display').innerText = `LV. ${level}`; 
-    document.getElementById('exp-bar').style.width = (exp/nextLevelExp*100)+'%'; 
-    
-    const hpBar = document.getElementById('hp-bar'); 
-    hpBar.style.width = (player.hp/player.maxHp*100)+'%'; 
-    
-    // 905번 줄 수정: 체력바가 이미 빨간색이므로, 피격 시에는 연분홍색(#ffcccc)으로 반짝이게 합니다.
-    if (player.hitTimer > 0 && Math.floor(gameTime * 30) % 2 === 0) { 
-        hpBar.style.background = '#ffcccc'; 
-        hpBar.style.boxShadow = '0 0 10px #ff4757'; 
-    } else { 
-        hpBar.style.background = 'var(--hp-color)'; 
-        hpBar.style.boxShadow = 'none'; 
-    }
-
-    document.getElementById('kill-count').innerText = `💀 ${kills}`; 
-    document.getElementById('gold-display').innerText = `🪙 ${runGold}`; 
+    document.getElementById('timer').innerText = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`; document.getElementById('level-display').innerText = `LV. ${level}`; document.getElementById('exp-bar').style.width = (exp/nextLevelExp*100)+'%'; 
+    const hpBar = document.getElementById('hp-bar'); hpBar.style.width = (player.hp/player.maxHp*100)+'%'; 
+    if (player.hitTimer > 0 && Math.floor(gameTime * 30) % 2 === 0) { hpBar.style.background = '#ff4757'; hpBar.style.boxShadow = '0 0 10px #ff4757'; } else { hpBar.style.background = 'var(--hp-color)'; hpBar.style.boxShadow = 'none'; }
+    document.getElementById('kill-count').innerText = `💀 ${kills}`; document.getElementById('gold-display').innerText = `🪙 ${runGold}`; 
 }
  
 function gameOver(isReaperDeath = false) { 
