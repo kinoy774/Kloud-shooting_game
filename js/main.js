@@ -1177,7 +1177,45 @@ function gameOver(isReaperDeath = false) {
     }
     document.getElementById('result-stats').innerText = `기록: ${Math.floor(gameTime/60)}분 ${Math.floor(gameTime%60)}초 생존 / 처치 수: ${kills}`; 
 }
- 
+
+* 실시간 캐릭터 능력치 창 토글 및 렌더링
+ */
+function toggleStatus() {
+    const screen = document.getElementById('status-screen');
+    if (screen.classList.contains('hidden')) { 
+        saveGame(); 
+        isGameRunning = false; 
+        renderStatus(); 
+        screen.classList.remove('hidden'); 
+    } 
+    else { 
+        screen.classList.add('hidden'); 
+        isGameRunning = true; 
+        lastTime = performance.now(); 
+        requestAnimationFrame(gameLoop); 
+    }
+}
+
+function renderStatus() {
+    const container = document.getElementById('status-content');
+    // 초당 총 회복량 계산: (기본 0.525 + 스탯 회복량)[cite: 11]
+    const totalRegen = (0.525 + player.stats.regen).toFixed(2); 
+
+    container.innerHTML = `
+        <div class="stat-row"><span class="stat-label">❤️ 최대 체력</span> <span class="stat-value">${Math.floor(player.maxHp)}</span></div>
+        <div class="stat-row"><span class="stat-label">💊 초당 회복</span> <span class="stat-value">${totalRegen}/s</span></div>
+        <div class="stat-row"><span class="stat-label">⚔️ 공격력</span> <span class="stat-value">${Math.floor(player.stats.atk * 100)}%</span></div>
+        <div class="stat-row"><span class="stat-label">⚡ 공격 속도</span> <span class="stat-value">${Math.floor(player.stats.cooldown * 100)}%</span></div>
+        <div class="stat-row"><span class="stat-label">👟 이동 속도</span> <span class="stat-value">${player.speed.toFixed(1)}</span></div>
+        <div class="stat-row"><span class="stat-label">🛡️ 방어력</span> <span class="stat-value">${(player.stats.def * 100).toFixed(1)}%</span></div>
+        <div class="stat-row"><span class="stat-label">📏 공격 범위</span> <span class="stat-value">${Math.floor(player.stats.area * 100)}%</span></div>
+        <div class="stat-row"><span class="stat-label">✨ 경험치 보너스</span> <span class="stat-value">${Math.floor(player.stats.expBonus * 100)}%</span></div>
+    `;
+}
+
+
+
+
 function setupInput() { 
     const container = document.getElementById('game-container');
     const hs = (e) => { 
@@ -1206,14 +1244,14 @@ function setupInput() {
 }
  
 window.onload = init;
-
-window.startGame = startGame;
-window.showOverlay = showOverlay;
-window.openInGameShop = openInGameShop;
-window.closeInGameShop = closeInGameShop;
-window.toggleInventory = toggleInventory;
-window.toggleAudio = toggleAudio;
-window.saveOptionsAndBack = saveOptionsAndBack;
-window.returnToMenu = returnToMenu;
-window.buyInGameUpgrade = buyInGameUpgrade;
+window.startGame = startGame; 
+window.showOverlay = showOverlay; 
+window.openInGameShop = openInGameShop; 
+window.closeInGameShop = closeInGameShop; 
+window.toggleInventory = toggleInventory; 
+window.toggleAudio = toggleAudio; 
+window.saveOptionsAndBack = saveOptionsAndBack; 
+window.returnToMenu = returnToMenu; 
+window.buyInGameUpgrade = buyInGameUpgrade; 
 window.confirmSelection = confirmSelection;
+window.toggleStatus = toggleStatus;
