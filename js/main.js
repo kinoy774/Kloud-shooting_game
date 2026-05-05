@@ -506,7 +506,7 @@ function checkHit(centerAngle, spread, range, dmg, kbMult, slowEffect) {
     }
     boxes.forEach(b => { 
         if (b.hitDelay <= 0 && dist(player.x, player.y, b.x, b.y) < range + b.size) { 
-            const ang = Math.atan2(b.y - player.y, e.x - player.x); // 주의: 오타 방지용 (e.x -> b.x)
+            const ang = Math.atan2(b.y - player.y, b.x - player.x); // 주의: 오타 방지용 (e.x -> b.x)
             let diff = Math.abs(ang - centerAngle); if (diff > Math.PI) diff = Math.PI * 2 - diff;
             if (diff <= spread / 2) { b.hp -= 1; b.hitDelay = 0.1; sfxHit(); }
         } 
