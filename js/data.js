@@ -3,7 +3,7 @@ export const UPG_INFO = {
     def: { name: '단단한 피부', icon: '🛡️', desc: '받는 피해량 감소', maxLv: 50, getVal: (lv) => `-${lv * 2}%`, mult: 1 },
     hp: { name: '생명력 훈련', icon: '❤️', desc: '최대 체력 증가', maxLv: 100, getVal: (lv) => `+${lv * 15}`, mult: 1 },
     regen: { name: '자연 치유', icon: '✨', desc: '초당 체력 회복', maxLv: 50, getVal: (lv) => `+${(lv * 0.63).toFixed(1)}/초`, mult: 1 },
-    speed: { name: '날렵한 발걸음', icon: '👟', desc: '이동 속도 증가', maxLv: 20, getVal: (lv) => `+${lv * 3}%`, mult: 3 },
+    speed: { name: '날렵한 발걸음', icon: '👟', desc: '이동 속도 증가', maxLv: 20, getVal: (lv) => `+${lv * 1.5}%`, mult: 3 },
     aspd: { name: '신속의 손놀림', icon: '⚡', desc: '공격 속도 증가', maxLv: 20, getVal: (lv) => `+${(lv * 1.6).toFixed(1)}%`, mult: 3 },
     exp: { name: '경험치 증폭', icon: '📖', desc: '경험치 획득량 증가', maxLv: 10, getVal: (lv) => `+${lv * 3}%`, mult: 1 }
 };
