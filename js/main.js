@@ -309,16 +309,16 @@ function buyInGameUpgrade(key) {
 function recalculateStats() {
     let oldMaxHp = player.maxHp;
 
-    player.maxHp = 180 + (runUpgrades.hp * 15);
+    player.maxHp = 180 + (runUpgrades.hp * 30);
     player.speed = 2.7 * (1 + runUpgrades.speed * 0.015);
 
     player.stats = {
-        atk: 1.0 + (runUpgrades.atk * 0.02) + (level * 0.05),
-        cooldown: 1.0 + (runUpgrades.aspd * 0.016),
+        atk: 1.0 + (runUpgrades.atk * 0.05) + (level * 0.05),
+        cooldown: 1.0 + (runUpgrades.aspd * 0.012),
         area: 1.0,
         expBonus: 1.0 + (runUpgrades.exp * 0.03),
         def: runUpgrades.def * 0.01,
-        regen: runUpgrades.regen * 0.63,
+        regen: runUpgrades.regen * 1.0,
         pickup: 1.0
     };
 
@@ -653,8 +653,11 @@ function attack(w, isEvolved = false) {
                 projectiles.push({ x: player.x, y: player.y, vx: Math.cos(a), vy: Math.sin(a), speed: dbSpeed, dmg: dmg, life: range / dbSpeed, type: 'bullet', color: d.color, pierce: 3, kbMult, slowEffect }); 
             }
         } else if (d.logic === 'black_hole') {
-            projectiles.push({ x: player.x, y: player.y, vx: Math.cos(angle), vy: Math.sin(angle), speed: 8.0 * 60, dmg: dmg*0.2, life: 2.0, type: 'black_hole', color: d.color, pierce: 999, kbMult, slowEffect });
-        } else if (d.logic === 'sun_strike') {
+    let spawnX = player.x + Math.cos(angle) * 60;
+    let spawnY = player.y + Math.sin(angle) * 60;
+    projectiles.push({ x: spawnX, y: spawnY, vx: Math.cos(angle), vy: Math.sin(angle), speed: 8.0 * 60, dmg: dmg * 0.6, life: 2.0, type: 'black_hole', color: d.color, pierce: 999, kbMult, slowEffect });
+    }
+        else if (d.logic === 'sun_strike') {
             for(let i=0; i<8; i++) { 
                 let rx = player.x + (Math.random()-0.5)*1200, ry = player.y - 800 - Math.random()*300; 
                 projectiles.push({ x: rx, y: ry, vx: 0, vy: 1, speed: 45 * 60, dmg: dmg, life: 3.0, type: 'sun_strike', color: d.color, pierce: 999, kbMult, slowEffect }); 
@@ -832,14 +835,25 @@ function update(dt) {
                 if(player.hp <= 0) gameOver();
                 p.life = 0;
             }
-        } else if (p.type === 'black_hole') {
-            for (let j = entities.length - 1; j >= 0; j--) {
-                let e = entities[j]; if(e.type !== 'enemy') continue;
-                let d = dist(p.x, p.y, e.x, e.y);
-                if (d < 30 && !e.isBoss && e.id !== 'reaper') { let a = Math.atan2(p.y - e.y, p.x - e.x); if (d > 10) { e.kbX = Math.cos(a) * 2.5; e.kbY = Math.sin(a) * 2.5; } else { e.kbX = 0; e.kbY = 0; } }
-                if (d < 20) { e.hp -= (e.id === 'reaper' ? 0 : p.dmg * dt * 10); if(Math.random() > 0.8) fx.push({ type: 'spark', x: e.x, y: e.y, life: 0.1, color: '#9b59b6' }); }
-            }
-            boxes.forEach(b => { if (b.hitDelay <= 0 && dist(p.x, p.y, b.x, b.y) < 60) { b.hp -= 1; b.hitDelay = 0.5; sfxHit(); } });
+      } else if (p.type === 'black_hole') {
+    for (let j = entities.length - 1; j >= 0; j--) {
+        let e = entities[j]; if(e.type !== 'enemy') continue;
+        let d = dist(p.x, p.y, e.x, e.y);
+        
+        // 당기는 범위를 180으로, 당기는 힘을 7.0으로 크게 올렸습니다
+        if (d < 80 && !e.isBoss && e.id !== 'reaper') { 
+            let a = Math.atan2(p.y - e.y, p.x - e.x); 
+            if (d > 15) { e.kbX = Math.cos(a) * 15.0; e.kbY = Math.sin(a) * 15.0; } 
+            else { e.kbX = 0; e.kbY = 0; } 
+        }
+        
+        // 타격 범위를 50으로 넓히고, 갈아버리는 데미지를 25로 올렸습니다
+        if (d < 30) { 
+            e.hp -= (e.id === 'reaper' ? 0 : p.dmg * dt * 25); 
+            if(Math.random() > 0.8) fx.push({ type: 'spark', x: e.x, y: e.y, life: 0.1, color: '#9b59b6' }); 
+        }
+    }
+    boxes.forEach(b => { if (b.hitDelay <= 0 && dist(p.x, p.y, b.x, b.y) < 60) { b.hp -= 1; b.hitDelay = 0.5; sfxHit(); } });
         } else if (p.type === 'buzzsaw') {
             p.angleOffset += dt * 4; p.x = player.x + Math.cos(p.angleOffset) * p.radius; p.y = player.y + Math.sin(p.angleOffset) * p.radius; 
             checkHitRadius(p.x, p.y, 60, p.dmg * dt * 5, p.kbMult, p.slowEffect, true);
@@ -976,7 +990,7 @@ function draw() {
             ctx.fillStyle = '#145a32'; ctx.fillRect(-5, -4, 2, 8); ctx.fillRect(5, -4, 2, 8);
         }
         else if(p.type === 'divine_wave') { ctx.rotate(p.angle); ctx.strokeStyle = '#000'; ctx.lineWidth = 30; ctx.beginPath(); ctx.arc(0, 0, 100, -0.8, 0.8); ctx.stroke(); ctx.strokeStyle = p.color; ctx.lineWidth = 20; ctx.beginPath(); ctx.arc(0, 0, 100, -0.8, 0.8); ctx.stroke(); }
-        else if (p.type === 'black_hole') { ctx.rotate(gameTime * 10); ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(0, 0, 80, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = p.color; ctx.lineWidth = 15; ctx.beginPath(); ctx.arc(0, 0, 90 + Math.sin(gameTime*20)*10, 0, Math.PI*2); ctx.stroke(); }
+        else if (p.type === 'black_hole') { ctx.rotate(gameTime * 10); ctx.fillStyle = '#111'; ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = p.color; ctx.lineWidth = 10; ctx.beginPath(); ctx.arc(0, 0, 45 + Math.sin(gameTime*20)*5, 0, Math.PI*2); ctx.stroke(); }
         else if (p.type === 'sun_strike') { ctx.strokeStyle = '#000'; ctx.lineWidth = 35; ctx.beginPath(); ctx.moveTo(0, -60); ctx.lineTo(0, 60); ctx.stroke(); ctx.strokeStyle = p.color; ctx.lineWidth = 25; ctx.beginPath(); ctx.moveTo(0, -60); ctx.lineTo(0, 60); ctx.stroke(); }
         else if (p.type === 'buzzsaw') { ctx.rotate(gameTime * -20); ctx.fillStyle = '#b2bec3'; ctx.beginPath(); ctx.arc(0, 0, 40, 0, Math.PI*2); ctx.fill(); ctx.strokeStyle = p.color; ctx.lineWidth = 15; ctx.setLineDash([10, 10]); ctx.beginPath(); ctx.arc(0, 0, 50, 0, Math.PI*2); ctx.stroke(); }
         else if (p.type === 'molotov') { ctx.rotate(gameTime * 15); ctx.font = '30px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText('🍾', 0, 0); }
@@ -1077,7 +1091,7 @@ function selectCard(idx) {
         if(perkBox) { perkBox.classList.remove('hidden'); perkBox.innerHTML = `🌟 진화 고유 능력:<br>${item.desc}<br><br>💡 (기존 무기와 보조 아이템이 합쳐집니다.)`; }
     } else if (item.type === '무기') {
         const owned = player.weapons.find(w => w.id === item.id), curLv = owned ? owned.level : 0, nextLv = curLv + 1;
-        const levelDmgBonus = item.id === 'molotov' ? 13 : 97;
+        const levelDmgBonus = item.id === 'molotov' ? 12 : 110;
         const getAtk = (lv) => Math.floor(item.baseAtk + Math.max(0, lv - 1) * levelDmgBonus);
         const getRange = (lv) => Math.floor(item.baseRange + Math.max(0, lv - 1) * 20);
         
@@ -1260,7 +1274,25 @@ function setupInput() {
     container.addEventListener('mousedown', hs); window.addEventListener('mousemove', hm, { passive: false }); window.addEventListener('mouseup', he); 
     container.addEventListener('touchstart', hs, { passive: false }); window.addEventListener('touchmove', hm, { passive: false }); window.addEventListener('touchend', he); 
 }
- 
+// 👇 파일 하단 빈 공간에 아래 함수들을 추가해 주세요 👇
+
+function activateDevMode() {
+    const devBtn = document.getElementById('dev-lvl-btn');
+    if (devBtn) {
+        devBtn.style.display = 'block';
+    }
+    startGame(false, 'HARD'); 
+}
+
+function forceLevelUp() {
+    if (!isGameRunning) return;
+    gainExp((nextLevelExp - exp) / player.stats.expBonus);
+}
+
+
+
+
+
 window.onload = init;
 window.startGame = startGame;
 window.showOverlay = showOverlay;
@@ -1273,3 +1305,6 @@ window.returnToMenu = returnToMenu;
 window.buyInGameUpgrade = buyInGameUpgrade;
 window.confirmSelection = confirmSelection;
 window.toggleStatus = toggleStatus;
+// 개발자 모드 함수
+window.activateDevMode = activateDevMode;
+window.forceLevelUp = forceLevelUp;

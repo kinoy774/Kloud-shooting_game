@@ -25,7 +25,7 @@ export function spawnEnemy(entities, player, gameTime, gameScale, width, height,
         dmg: type.dmg * diffAtkMult, speed: type.speed + diffSpeedBonus,
         kbX: 0, kbY: 0, isBoss: false, type: 'enemy', vx: 0, vy: 0, kbResist: type.kbResist || 0,
         state: 'normal', chargeTimer: 0, dashTimer: 0, dashVx: 0, dashVy: 0, cooldown: 0
-    });0
+    });
 
     return { dogCount: newDog, koalaCount: newKoala };
 }

@@ -22,6 +22,8 @@
 
 <div id="hud">
     <div id="exp-container"><div id="exp-bar"></div></div>
+
+    <button id="dev-lvl-btn" onclick="forceLevelUp()" style="display: none; position: absolute; top: 70px; right: 15px; margin: 0; padding: 4px 10px; font-size: 1.1rem; width: auto; background: #9b59b6; color: #fff; border: 3px solid #000; border-radius: 8px; box-shadow: 2px 2px 0 #000; pointer-events: auto; font-family: 'Black Han Sans'; cursor: pointer; z-index: 50;">🚀 폭풍 렙업</button>
     
     <div id="stats-row" style="position: absolute; top: 22px; width: 100%; display: flex; justify-content: space-between; padding: 0 15px; box-sizing: border-box; align-items: flex-start; z-index: 41; pointer-events: none;">
         
@@ -99,6 +101,9 @@
             <button onclick="showOverlay('difficulty-screen')">새 게임 시작</button>
             <button onclick="showOverlay('how-to-play')">게임 방법</button>
             <button onclick="showOverlay('options-screen')">설정</button>
+        </div>
+        <div onclick="activateDevMode()" style="position: absolute; bottom: 0; right: 0; width: 60px; height: 60px; cursor: pointer; z-index: 100; opacity: 0;">
+            
         </div>
     </div>
 
